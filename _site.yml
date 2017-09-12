@@ -1,0 +1,9 @@
+title: "Basic Web Page"
+output_dir: "."
+navbar:
+  title: "Bowen Jones"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "bookdown"
+      href: bookdown.html
