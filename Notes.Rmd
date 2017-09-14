@@ -1,0 +1,113 @@
+---
+title: "Notes"
+author: "Bowen Jones"
+date: "9/7/2017"
+output: 
+  html_document:
+    toc: true
+    theme: flatly
+---
+Note: Crtl + alt + I inserts code chunk
+
+# **Binomial Distribution**
+
+Notated as:
+$$X~Binom(n, p) $$
+Where random variable *X* follows the Binomial Distribution with *n* trials of probability *p*.
+To determine *expected value E(X):*
+
+$$E(X) = n * p$$
+So, to find the expected value *E(X)* of *X~Binom(10, .5):* 
+```{r}
+(10*.5)
+```
+Variance is computed using 
+$$Var(X)= E(X) * (1-p)$$
+
+## *Determining the probability of a specific outcome x*
+Notated as $Pr(X=x)$, where *x* is the desired number of successes.
+
+### Simulation Method
+A common method of determing $Pr(X=x)$ is by running simulations and averaging the results. We use the *rbinom* function as follows: $$rbinom(n, size, p)$$
+Note that here, *n* is desired number of simulations, *size* is the number of trials and *p* is the probability of success.
+To determine the probability of *x=5* successes given *X~Binom(10, .5)*, 
+``` {r}
+mean(rbinom(10000, 10, .5)==5)
+```
+This returns the fraction of outcomes with 5 successes.
+
+### Exact Method
+Alternatively, one could use the *dbinom* function to find the exact value as follows, `dbinom(n, size, p)`, where the first argument specifies the desired number of successes. So, 
+
+``` {r}
+dbinom(5, 10, .5)
+```
+
+mean(rbinom(10000, 10, .5)<=4)
+or, pbinom(4, 10, .5)
+
+
+fair <- dbinom(13, 20, 0.50)
+bias <- dbinom(13, 20, 0.80)
+fair / (fair + bias)
+
+
+P(A and B) = P(A)P(B) -- branches
+or, 
+A <- rbinom(10000, 1, .5)
+B <- rbinom(10000, 1, .5)
+mean(A & B)
+
+P(A or B) = (P(A) + P(B)) - P(A&B)
+mean(A|B)
+mean(A <=3 | B <= 3)
+
+multiplying a random variable k results 
+in a similar transformation in E(X) -- E|k*X| = k * E(X)
+Var(k*Y) = k^2 Var(Y)
+
+fair <- rbinom(10000, 20, .5)
+sum(fair==14) = 1888
+biased <- rbinom(10000, 20, .75)
+sum(biased==14) = 8372
+number biased/number total = 8372/(1888+8372)
+
+fair <- dbinom(16, 20, 0.5)
+bias <- dbinom(16, 20, 0.8)
+p_fair <- 0.99
+p_bias <- 0.01
+(fair * p_fair) / (fair * p_fair + bias * p_bias)
+
+Var(aX +- bY) = a^2Var(x) + b^2Var(x)
+prior prob - alter n
+
+# **Geometric Distribution**
+Waiting for first success (heads of flips, in this case; "machine malfunctions" for application)
+ 
+``` {r}
+flips <- rbinom(100, 1, .1)
+```
+Using the *which* function, 
+``` {r} 
+which(flips == 1)[1] 
+```
+
+For simulation method use the *replicate* function, yielding a list of the first appearance of a success for each of 10 trials 
+
+``` {r} 
+replicate(10, which(rbinom(100, 1, .1)==1)[1])
+```
+To determine expected value, run mean
+``` {r} 
+mean(sum(replicate(10, which(rbinom(100, 1, .1)==1)[1])))
+```
+
+##Introducing rgeom
+*style:* rgeom(draws, probability)
+
+X~Geom(*p*)
+``` {r}
+geom <- rgeom(100000, .1)
+mean(geom)
+```
+$E(X) = (1/p) - 1$
