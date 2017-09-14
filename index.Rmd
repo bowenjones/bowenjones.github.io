@@ -4,3 +4,7 @@ author: "Bowen Jones"
 output: html_document
 ---
 
+```{r, echo=FALSE}
+knitr::include_graphics("275px-A_small_cup_of_coffee.JPG")
+```
+
