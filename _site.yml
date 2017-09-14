@@ -1,7 +1,7 @@
 title: "Basic Web Page"
 output_dir: "."
 navbar:
-  title: "Bowen Jones"
+  title: "Bowen W Jones"
   left:
     - text: "Home"
       href: index.html
@@ -11,3 +11,7 @@ navbar:
       href: Notes.html
     - text: "LinkedIn"
       href: www.linkedin.com/in/jonesb93
+output:
+  html_document:
+    theme: yeti
+    highlight: textmate
