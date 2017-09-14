@@ -7,3 +7,5 @@ navbar:
       href: index.html
     - text: "bookdown"
       href: bookdown.html
+    - text: "Notes"
+      href: Notes.html

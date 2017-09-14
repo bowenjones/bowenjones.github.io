@@ -182,6 +182,9 @@ $(document).ready(function () {
 <li>
   <a href="bookdown.html">bookdown</a>
 </li>
+<li>
+  <a href="Notes.html">Notes</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -229,7 +232,7 @@ $(document).ready(function () {
 <h3>Simulation Method</h3>
 <p>A common method of determing <span class="math inline">\(Pr(X=x)\)</span> is by running simulations and averaging the results. We use the <em>rbinom</em> function as follows: <span class="math display">\[rbinom(n, size, p)\]</span> Note that here, <em>n</em> is desired number of simulations, <em>size</em> is the number of trials and <em>p</em> is the probability of success. To determine the probability of <em>x=5</em> successes given <em>X~Binom(10, .5)</em>,</p>
 <pre class="r"><code>mean(rbinom(10000, 10, .5)==5)</code></pre>
-<pre><code>## [1] 0.2511</code></pre>
+<pre><code>## [1] 0.245</code></pre>
 <p>This returns the fraction of outcomes with 5 successes.</p>
 </div>
 <div id="exact-method" class="section level3">
@@ -254,20 +257,20 @@ $(document).ready(function () {
 <pre class="r"><code>flips &lt;- rbinom(100, 1, .1)</code></pre>
 <p>Using the <em>which</em> function,</p>
 <pre class="r"><code>which(flips == 1)[1] </code></pre>
-<pre><code>## [1] 6</code></pre>
+<pre><code>## [1] 2</code></pre>
 <p>For simulation method use the <em>replicate</em> function, yielding a list of the first appearance of a success for each of 10 trials</p>
 <pre class="r"><code>replicate(10, which(rbinom(100, 1, .1)==1)[1])</code></pre>
-<pre><code>##  [1]  7  3 14  8  4  1  5  2 16  2</code></pre>
+<pre><code>##  [1]  1  6 14  9  4 27 15  1  2 38</code></pre>
 <p>To determine expected value, run mean</p>
 <pre class="r"><code>mean(sum(replicate(10, which(rbinom(100, 1, .1)==1)[1])))</code></pre>
-<pre><code>## [1] 56</code></pre>
+<pre><code>## [1] 78</code></pre>
 <div id="introducing-rgeom" class="section level2">
 <h2>Introducing rgeom</h2>
 <p><em>style:</em> rgeom(draws, probability)</p>
 <p>X~Geom(<em>p</em>)</p>
 <pre class="r"><code>geom &lt;- rgeom(100000, .1)
 mean(geom)</code></pre>
-<pre><code>## [1] 9.00496</code></pre>
+<pre><code>## [1] 8.98329</code></pre>
 <p><span class="math inline">\(E(X) = (1/p) - 1\)</span></p>
 </div>
 </div>
