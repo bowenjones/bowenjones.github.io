@@ -3,4 +3,6 @@ title: ''
 output: html_document
 ---
 
-<<\ * />>
+```{r, echo=FALSE}
+knitr::include_graphics("download.jpg")
+```

@@ -13,6 +13,8 @@ navbar:
       href: https://www.linkedin.com/in/jonesb93/
     - text: ""
       href: 1.html
+    - text: "Duplication Project"
+      href: Duplication_Project.html
 output:
   html_document:
     theme: yeti
