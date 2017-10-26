@@ -208,35 +208,10 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Bicycle Sharing in Seattle</h1>
 <h4 class="author"><em>Bowen Jones</em></h4>
-<h4 class="date"><em>9/19/2017</em></h4>
+<h4 class="date"><em>Oct 26, 2017</em></h4>
 
 </div>
 
-<div id="TOC">
-<ul>
-<li><a href="#introduction">Introduction</a><ul>
-<li><a href="#loading-necessary-packages">Loading Necessary Packages</a></li>
-<li><a href="#importing-data">Importing Data</a><ul>
-<li><a href="#data-structures-and-variables">Data Structures and Variables</a></li>
-</ul></li>
-</ul></li>
-<li><a href="#data-visualizations">Data Visualizations</a><ul>
-<li><a href="#exploring-the-stations-dataset">Exploring the Stations Dataset</a><ul>
-<li><a href="#station-installation">Station Installation</a></li>
-</ul></li>
-<li><a href="#exploring-the-trips-dataset">Exploring the Trips Dataset</a><ul>
-<li><a href="#plotting-trips-per-month-by-season">Plotting Trips Per Month (By Season)</a></li>
-<li><a href="#average-trip-duration">Average Trip Duration</a></li>
-<li><a href="#number-of-trips-by-day-of-week">Number of Trips by Day of Week</a></li>
-<li><a href="#number-of-trips-by-time-of-day">Number of Trips by Time of Day</a></li>
-<li><a href="#number-of-trips-by-member-type">Number of Trips by Member Type</a></li>
-<li><a href="#trip-duration-by-member-type">Trip Duration by Member Type</a></li>
-<li><a href="#member-demographics">Member Demographics</a></li>
-</ul></li>
-<li><a href="#exploring-the-weather-dataset">Exploring the Weather Dataset</a></li>
-</ul></li>
-</ul>
-</div>
 
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
@@ -456,6 +431,7 @@ Trip_Duration_Month &lt;- start_date_ym %&gt;% mutate(trip_duration_min = tripdu
 <p>If I were to guess, I’d think the short-term passes would be ideal for tourists or people looking for a quick weekend trip, whereas members may be more likely to continue using the service year-round. Let’s check out my assumptions by plotting, once again colored by season.</p>
 <p>PLOT HERE</p>
 <p>Surprisingly (to me, at least), different types of users seem to follow similar patterns of usage. Spring and Summer are definitely the most popular times for anyone to ride a bike in the Seattle area.</p>
+<p>STOP HERE</p>
 </div>
 <div id="trip-duration-by-member-type" class="section level3">
 <h3>Trip Duration by Member Type</h3>
@@ -472,6 +448,15 @@ Trip_Duration_Month &lt;- start_date_ym %&gt;% mutate(trip_duration_min = tripdu
         tripduration_m &gt; 30 &amp; tripduration_m &lt; 60, 2, ifelse(usertype == 
         &quot;Short-Term Pass Holder&quot; &amp; tripduration_m &gt; 60, (2 + 
         5 * ((tripduration_m - 60)/30)), &quot;unknown&quot;)))))))</code></pre>
+<pre class="r"><code>trip_cost &lt;- trip_2 %&gt;% mutate(cost = ifelse(usertype == &quot;Member&quot; &amp; 
+    tripduration_m &lt;= 45, 0, ifelse(usertype == &quot;Member&quot; &amp; tripduration_m &gt; 
+    45 &amp; tripduration_m &lt;= 75, 2, ifelse(usertype == &quot;Member&quot; &amp; 
+    tripduration_m &gt; 75, (2 + 2 * ceiling((tripduration_m - 75)/30)), 
+    ifelse(usertype == &quot;Short-Term Pass Holder&quot; &amp; tripduration_m &lt;= 
+        30, 0, ifelse(usertype == &quot;Short-Term Pass Holder&quot; &amp; 
+        tripduration_m &gt; 30 &amp; tripduration_m &lt; 60, 2, ifelse(usertype == 
+        &quot;Short-Term Pass Holder&quot; &amp; tripduration_m &gt; 60, (2 + 
+        5 * ceiling((tripduration_m - 60)/30)), NA)))))))</code></pre>
 <p>That was a complicated nested if/else statement! Let’s see how much these folks are paying in additional fees!</p>
 <p>PLOT HERE</p>
 <p>Looks like short-term pass holders (who are already paying a higher price per day of biking), are also paying lots of extra fees. This could be because they are unfamiliar with the pricing structure and don’t realize they need to return their bike to a station within 30 minutes without getting charged. It is also possible that short-term users may be tourists who don’t know their way around as easily, and thus can’t find their way to a station within the time limit.</p>
@@ -485,7 +470,7 @@ trip_age &lt;- trip_2 %&gt;% mutate(age = year(start_dt) - birthyear)
 
 hist(trip_age$age, main = &quot;Member Age&quot;, xlab = &quot;Number of Riders&quot;, 
     col = &quot;#56B4E9&quot;, breaks = 25)</code></pre>
-<p><img src="Duplication_Project_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p><img src="Duplication_Project_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
 <p>PLOT HERE</p>
 <p>My first instinct here is to say “Wow! There’s a lot of 20 and 30-somethings that use this service!” But this figure (and these data) may be a little misleading. You see, we don’t have any sort of Rider ID number, meaning we can’t take “individual activity level” into account. So we can’t tell if the tallest spike is because 5 very athletic 28-year-olds went on 4,000 trips each, or if 100 people went on 200 trips each, or if there were 20,000 28-year-olds who each only used the service once.</p>
 <p>The same problem would arise if we looked at gender, so I’m just going to move beyond demographics.</p>
