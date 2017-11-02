@@ -1,19 +1,19 @@
 ---
 title: "Bicycle Sharing in Seattle"
-author: "Bowen Jones"
+author: "Bowen Jones and Paige Spell and Andrew Martin-Smith"
 date: '`r format(Sys.time(), "%b %d, %Y")`'
 output: 
-  bookdown::html_document2
+  bookdown::html_document2:
     toc: true 
 ---
 
-# Introduction
+# **Introduction**
 
 This is an exploration of bicycle-sharing data in the city of Seattle, WA (USA) from October 2014 - August 2016. I hope to eventually combine this data with other forms of ride-sharing and transportation in the city, but this will be the first step.
 
 Time to get started!
 
-## Loading Necessary Packages
+## **Loading Necessary Packages**
 
 
 ```{r, message=FALSE}
@@ -33,26 +33,26 @@ library(ggplot2)
 library(caret)
 ```
 
-## Importing Data
+## **Importing Data**
 
 All of the data can be downloaded from the bicycle-sharing service [“Pronto!”’s website](https://www.prontocycleshare.com/data) or from [Kaggle](https://www.kaggle.com/pronto/cycle-share-dataset). This project contains 3 data sets and I’ll import and inspect each data file independently.
 
 ```{r, warning=FALSE, message=FALSE}
-station <- read.csv(file = "2016_station_data.csv", header = TRUE, 
+station <- read.csv(file = "./Duplication_Project_files/2016_station_data.csv", header = TRUE, 
     stringsAsFactors = FALSE)
 
-trip <- read.csv(file = "2016_trip_data.csv", header = TRUE, 
+trip <- read.csv(file = "./Duplication_Project_files/2016_trip_data.csv", header = TRUE, 
     stringsAsFactors = FALSE)
 
-weather <- read.csv(file = "2016_weather_data.csv", header = TRUE, 
+weather <- read.csv(file = "./Duplication_Project_files/2016_weather_data.csv", header = TRUE, 
     stringsAsFactors = FALSE)
 ```
 
 Ok, let’s take a look at each of these data files.
 
-### Data Structures and Variables
+### **Data Structures and Variables**
 
-*Station*
+**Station**
 
 ```{r, echo=FALSE}
 glimpse(station)
@@ -61,15 +61,15 @@ glimpse(station)
 
 Looks like this dataset is dealing with 9 variables:
 
-Station ID : The individual ID number for a bike station
-Name : The name of that station ID, also appears to be the rough location of the station
-Latitude : The latitude of the station
-Longitude : The longitude of the station
-Install Date : When that particular station was installed (in MM/DD/YYYY format)
-Install Dock Count : Number of docks (bike positions) available at each station on installation day
-Modification Date : When a particular station was modified (in MM/DD/YYYY format)
-Current Dock Count : Number of docks (bike positions) available at each station on August 31, 2016
-Decommission Date : The date that a particular station was put out of service (in MM/DD/YYYY format)
+* **Station ID** : The individual ID number for a bike station
+* **Name** : The name of that station ID, also appears to be the rough location of the station
+* **Latitude** : The latitude of the station
+* **Longitude** : The longitude of the station
+* **Install Date** : When that particular station was installed (in MM/DD/YYYY format)
+* **Install Dock Count** : Number of docks (bike positions) available at each station on installation day
+* **Modification Date** : When a particular station was modified (in MM/DD/YYYY format)
+* **Current Dock Count** : Number of docks (bike positions) available at each station on August 31, 2016
+* **Decommission Date** : The date that a particular station was put out of service (in MM/DD/YYYY format)
 
 **Trip**
 
@@ -78,51 +78,51 @@ glimpse(trip)
 ```
 This dataset appears to contain 12 variables:
 
-Trip ID : An identification number assigned to each trip (from one bike station to another)
-Start Time : The time and date that a bike was borrowed from a station (in MM/DD/YYYY HH:MM format)
-Stop Time : The time and date that a bike was returned to a station (in MM/DD/YYYY HH:MM format)
-Bike ID : The identification number for a specific bike
-Trip Duration : Time of trip (measured in seconds)
-From Station Name : The name of the station where the bike was borrowed from
-To Station Name : The name of the station where the bike was returned to
-From Station ID : The ID number of the station where the bike was borrowed from
-To Station ID : The ID number of the station where the bike was returned to
-User Type : Indicates whether the user was a “Member” (i.e., someone with a monthly or annual membership to Pronto!) or a “Short-Term Pass Holder” (i.e., someone who purchased a 24 hour or 3 day pass)
-Gender : The gender of the rider (if known)
-Birth Year : The year that the rider was born
+* **Trip ID** : An identification number assigned to each trip (from one bike station to another)
+* **Start Time** : The time and date that a bike was borrowed from a station (in MM/DD/YYYY HH:MM format)
+* **Stop Time** : The time and date that a bike was returned to a station (in MM/DD/YYYY HH:MM format)
+* **Bike ID** : The identification number for a specific bike
+* **Trip Duration** : Time of trip (measured in seconds)
+* **From Station Name** : The name of the station where the bike was borrowed from
+* **To Station Name** : The name of the station where the bike was returned to
+* **From Station ID** : The ID number of the station where the bike was borrowed from
+* **To Station ID** : The ID number of the station where the bike was returned to
+* **User Type** : Indicates whether the user was a “Member” (i.e., someone with a monthly or annual membership to Pronto!) or a “Short-Term Pass Holder” (i.e., someone who purchased a 24 hour or 3 day pass)
+* **Gender** : The gender of the rider (if known)
+* **Birth Year** : The year that the rider was born
 
 **Weather**
 
-```{r}
+```{r, echo = FALSE}
 glimpse(weather)
 ```
 This dataset represents quite a bit of weather data in 21 variables.
 
-Date : The date in MM/DD/YYYY format
-Max Temperature F : The maximum temperature that day (in degrees F)
-Mean Temperature F : The average temperature that day (in degrees F)
-Min Temperature F : The minimum temperature that day (in degrees F)
-Max Dew Point F : The maximum dew point (in degrees F)
-Mean Dew Point F : The average dew point (in degrees F)
-Min Dew Point F : The minimum dew point (in degrees F)
-Max Humidity : The maximum humidity (in %)
-Mean Humidity : The average humidity (in %)
-Min Humidity : The minimum humidity (in %)
-Maximum Sea Level Pressure : The maximum atmospheric pressure at sea level (in inches of mercury)
-Mean Sea Level Pressure : The average atmospheric pressure at sea level (in inches of mercury)
-Min Sea Level Pressure : The minimum atmospheric pressure at sea level (in inches of mercury)
-Max Visibility Miles : The maximum visibility (in miles)
-Mean Visibility Miles : The average visibility (in miles)
-Min Visibility Miles : The minimum visibility (in miles)
-Max Wind Speed MPH : The maximum sustained wind speed (in miles per hour)
-Mean Wind Speed MPH : The average sustained wind speed (in miles per hour)
-Max Gust Speed MPH : The maximum gust wind speed (in miles per hour)
-Precipitation : The amount of precipitation (measured in inches)
-Events : Weather events that occurred that day (e.g., rain, fog, snow, thunderstorm etc.)
+* **Date** : The date in MM/DD/YYYY format
+* **Max Temperature F** : The maximum temperature that day (in degrees F)
+* **Mean Temperature F** : The average temperature that day (in degrees F)
+* **Min Temperature F** : The minimum temperature that day (in degrees F)
+* **Max Dew Point F** : The maximum dew point (in degrees F)
+* **Mean Dew Point F** : The average dew point (in degrees F)
+* **Min Dew Point F** : The minimum dew point (in degrees F)
+* **Max Humidity** : The maximum humidity (in %)
+* **Mean Humidity** : The average humidity (in %)
+* **Min Humidity** : The minimum humidity (in %)
+* **Maximum Sea Level Pressure** : The maximum atmospheric pressure at sea level (in inches of mercury)
+* **Mean Sea Level Pressure** : The average atmospheric pressure at sea level (in inches of mercury)
+* **Min Sea Level Pressure** : The minimum atmospheric pressure at sea level (in inches of mercury)
+* **Max Visibility Miles** : The maximum visibility (in miles)
+* **Mean Visibility Miles** : The average visibility (in miles)
+* **Min Visibility Miles** : The minimum visibility (in miles)
+* **Max Wind Speed MPH** : The maximum sustained wind speed (in miles per hour)
+* **Mean Wind Speed MPH** : The average sustained wind speed (in miles per hour)
+* **Max Gust Speed MPH** : The maximum gust wind speed (in miles per hour)
+* **Precipitation** : The amount of precipitation (measured in inches)
+* **Events** : Weather events that occurred that day (e.g., rain, fog, snow, thunderstorm etc.)
 
-# Data Visualizations
+# **Data Visualizations**
 
-## Exploring the Stations Dataset
+## **Exploring the Stations Dataset**
 
 Since the “Stations” dataset was the first one I imported, let’s start with a little exploration there. First of all, how many unique stations are we dealing with?
 
@@ -137,7 +137,7 @@ station_locs <- station %>% group_by(station_id) %>% select(1:4,
     -2)
 ```
 
-```{r}
+```{r, message = FALSE}
 # Load the correct map
 mymap <- get_map(location = "Seattle", maptype = "roadmap", zoom = 12)
 
@@ -145,18 +145,18 @@ mymap <- get_map(location = "Seattle", maptype = "roadmap", zoom = 12)
 ggmap(mymap) + geom_point(aes(x = long, y = lat), data = station_locs, 
     alpha = 0.7, color = "darkred", size = 2)
 ```
+
 So it looks like all of the stations are located near the Lower Queen Anne, Belltown, International District, Capitol Hill and University of Washington areas. Let’s take a more zoomed-in look.
 
-FIX THIS PLOT
-```{r echo=FALSE}
-mymap <- get_map(location = "Seattle", maptype = "roadmap", zoom = 13)
+```{r echo=FALSE, message=FALSE}
+mymap <- get_map(location = "Volunteer Park", maptype = "roadmap", zoom = 13)
 ggmap(mymap) + geom_point(aes(x = long, y = lat), data = station_locs, 
     alpha = 0.7, color = "darkred", size = 2)
 ```
 
 Great! So the locations are pretty well clustered. I wonder what order they were added in.
 
-### Station Installation
+### **Station Installation**
 
 First, let’s convert those character-string date objects to actual dates using the `lubridate` package.
 
@@ -175,13 +175,18 @@ station %>% group_by(install_date) %>% summarise(count = n()) %>%
 ```
 It looks like the vast majority (86%) of the stations were added on opening day. Let’s see where those original ones were and where the rest were added.
 
+
+
 So they added more stations throughout the district that they serve, instead of adding several new stations to a single neighborhood all at once. Good to know.
 
-Now, I wonder how many bikes can be parked at each station (as of August 31,2016)?
 
-```{r}
-ggplot(data = station, aes(x=current_dockcount))+geom_bar()
-##base histogram so that it is not centered at zero.
+Now, I wonder how many bikes can be parked at each station (as of August 31, 2016)?
+
+```{r, echo = FALSE}
+ggplot(data = station, aes(x=current_dockcount))+
+  geom_bar(fill = "lavender", color = "purple") + 
+  labs(y = "Frequency", x = "Number of Bikes Per Station") +
+  theme_bw()
 ```
 
 Well that’s weird, some of the stations have a dock count of 0. I’m assuming they didn’t start that way. Let’s calculate the change in dock count from station installation to August 31, 2016 and plot it on a map.
@@ -197,13 +202,14 @@ dock_change <- station %>% group_by(station_id) %>% select(station_id,
 Any stations with no change in number of docks are not shown here.
 
 ```{r, echo = FALSE}
+has_change <- dock_change %>% 
+  filter(dock_change != 0)
 ggmap(mymap) + 
   geom_point(aes(x = long, y = lat, size = factor(dock_change), color= factor(dock_change)),
-                          data = dock_change, alpha = 0.8) +  
+                          data = has_change, alpha = 0.9) +  
   guides(color = guide_legend(title = "Change"), size = guide_legend(title = "Change")) +
-  scale_size_manual(values = 10:1)
-
-##needs work
+  scale_size_manual(values = 10:1) +
+  scale_color_brewer(palette = "Paired")
 ```
 
 Wow! Looks like quite a few stations took away bike docks and none gained any. Perhaps those stations weren’t being used very frequently. We’ll have to look at that a bit later.
@@ -214,17 +220,18 @@ I’m going to take one quick look at the current size of each station before mo
 
 ```{r}
 ggmap(mymap) + 
-  geom_point(aes(x = long, y = lat, size = factor(dock_change), color= factor(dock_change)),
+  geom_point(aes(x = long, y = lat, size = factor(current_dockcount), color= factor(current_dockcount)),
                           data = dock_change, alpha = 0.8) +  
   guides(color = guide_legend(title = "Change"), size = guide_legend(title = "Change")) +
-  scale_size_manual(values = 1:10)
+  scale_size_manual(values = 1:10) +
+  scale_color_brewer(palette = "PuRd")
 ```
 
 So it looks like the biggest stations tend to be on the outskirts of the rest. Where there are several stations in close proximity, there tend to be fewer bike docks at each station. That makes sense, logically speaking. If you go to a station and there is no bike to rent, you can easily go to another nearby, assuming there is another nearby. In areas where the stations are more secluded, it’s more important that there be bikes and open spaces readily available for users.
 
 Alright, I’m feeling good about exploring this dataset. Time to check out the trip dataset!
 
-## Exploring the Trips Dataset
+## **Exploring the Trips Dataset**
 
 It’s been a while since we’ve looked at the trip dataset, so let’s take another peek at it here.
 ```{r, echo=FALSE}
@@ -250,20 +257,19 @@ trip_2$stop_date <- mdy(trip_2$stop_date)
 
 Great! Time to visualize the number of rides per day.
 
-```{r}
+```{r, echo = FALSE, message = FALSE}
 trip_2 %>% 
   group_by(start_date) %>%
   summarize(N = n()) %>%
   ggplot(aes(x = start_date, y = N)) + 
   geom_line() + 
   labs(x = "Date", y = "Number of trips per day") + 
-  theme_bw() + 
-  geom_smooth()
+  theme_bw()
 ```
 
 Hmm, grouping by day is a little noisy. Perhaps we should try by month?
 
-### Plotting Trips Per Month (By Season)
+### **Plotting Trips Per Month (By Season) **
 
 First, we need to create a “Year-Month” variable
 
@@ -275,18 +281,40 @@ start_date_ym <- trip_2 %>% mutate(ym = paste(year(start_date),
 Now plot. I think I’ll plot this by month but color it by season (where December, January, and February are “winter”, March, April, and May are “spring”, June, July, August are “summer”, and September, October, November are “autumn”)
 
 ```{r}
-start_date_ym <- trip_2 %>% mutate(ym = paste(year(start_date),
+start_date_ym <- trip_2 %>% 
+  mutate(ym = paste(year(start_date),
     month(start_date), sep = "/"), Season = ifelse(ym %in% c("2014/10", "2014/11"), "Fall",
                                             ifelse(ym %in% c("2014/12", "2015/1", "2015/2"), "Winter",
                                             ifelse(ym %in% c("2015/3", "2015/4", "2015/5"), "Spring", "Summer")))
 )
+```
+
+```{r}
+start_date_ym %>% 
+  group_by(ym, Season) %>%
+  summarize(N = n()) %>%
+  ggplot(aes(x = ym, y = N, color = Season)) + 
+  geom_point() + 
+  geom_line(aes(group = 1)) +
+  labs(x = "Date", y = "Number of trips per Month") +
+  theme_bw()
+
 names(start_date_ym)
 ```
 
 
 Well that intuitively makes sense. The number of trips taken per month increases in the spring, reaches a maximum in the summer, declines through the fall, remains fairly stable in the winter and then repeats.
 
-### Average Trip Duration
+
+
+
+
+
+
+
+
+
+### **Average Trip Duration**
 Great! I wonder how the average trip duration fluctuates over this time period.
 
 ```{r}
@@ -304,7 +332,7 @@ There’s surprisingly not a huge range in trip durations here.
 
 The little bit of variation here makes logical sense. Longer trips were being taken in the spring and summer months rather than the fall and winter. It’s also notable that the spring and summer of 2016 may have shown fewer trips than the previous year, show a slight increase in average trip length.
 
-### Number of Trips by Day of Week
+### **Number of Trips by Day of Week**
 I wonder if people are using this service to commute to/from work. Let’s look at the number of trips by day of the week.
 
 First, let’s create a Day of the Week variable.
@@ -322,7 +350,9 @@ Ok, so there are definitely more trips during the week than on the weekends. I w
 PLOT HERE
 
 So it looks like usage is relatively consistent across seasons, at least as far as the number of trips are concerned.
+
 ######################################################################################################################
+
 ### Number of Trips by Time of Day
 
 How about time of day? Are people using these around commuting times during the week and later on weekends?
@@ -544,3 +574,4 @@ Hold discounts in fall/winter
 Find a way to alert short-term users that their time limit will be ending soon, and where the nearest station is to them at that time
 Consider a 3rd membership option: “Commuter”. This may allow users to take bikes between 7-10 AM and 4-7 PM for free, but operate under a different time limit schedule during other times of day.
 As always, I appreciate any and all feedback from my work and appreciate you taking the time to see what I’ve done. Thanks!
+
