@@ -1,6 +1,6 @@
 ---
 title: "Bicycle Sharing in Seattle"
-author: "Bowen Jones and Paige Spell and Andrew Martin-Smith"
+author: "Bowen Jones"
 date: '`r format(Sys.time(), "%b %d, %Y")`'
 output: 
   bookdown::html_document2:
@@ -38,13 +38,13 @@ library(caret)
 All of the data can be downloaded from the bicycle-sharing service [“Pronto!”’s website](https://www.prontocycleshare.com/data) or from [Kaggle](https://www.kaggle.com/pronto/cycle-share-dataset). This project contains 3 data sets and I’ll import and inspect each data file independently.
 
 ```{r, warning=FALSE, message=FALSE}
-station <- read.csv(file = "./Duplication_Project_files/2016_station_data.csv", header = TRUE, 
+station <- read.csv(file = "2016_station_data.csv", header = TRUE, 
     stringsAsFactors = FALSE)
 
-trip <- read.csv(file = "./Duplication_Project_files/2016_trip_data.csv", header = TRUE, 
+trip <- read.csv(file = "2016_trip_data.csv", header = TRUE, 
     stringsAsFactors = FALSE)
 
-weather <- read.csv(file = "./Duplication_Project_files/2016_weather_data.csv", header = TRUE, 
+weather <- read.csv(file = "2016_weather_data.csv", header = TRUE, 
     stringsAsFactors = FALSE)
 ```
 
@@ -287,17 +287,13 @@ start_date_ym <- trip_2 %>%
                                             ifelse(ym %in% c("2014/12", "2015/1", "2015/2"), "Winter",
                                             ifelse(ym %in% c("2015/3", "2015/4", "2015/5"), "Spring", "Summer")))
 )
-```
-
-```{r}
 start_date_ym %>% 
   group_by(ym, Season) %>%
-  summarize(N = n()) %>%
+  summarize(N = sum(n())) %>%
   ggplot(aes(x = ym, y = N, color = Season)) + 
   geom_point() + 
-  geom_line(aes(group = 1)) +
-  labs(x = "Date", y = "Number of trips per Month") +
-  theme_bw()
+  geom_line(group = 1) +
+  labs(x = "Date", y = "Number of trips per Month")
 
 names(start_date_ym)
 ```
@@ -319,14 +315,33 @@ Great! I wonder how the average trip duration fluctuates over this time period.
 
 ```{r}
 # Convert Trip Duration from Seconds to Minutes
-Trip_Duration_Month <- start_date_ym %>% mutate(trip_duration_min = tripduration/60) %>% 
-    group_by(ym) %>% select(ym, trip_duration_min) %>% summarise(Avg = mean(trip_duration_min), 
-    sd = sd(trip_duration_min)) %>% mutate(se = sd/sqrt(n()))
+Trip_Duration_Month <- start_date_ym %>% 
+  mutate(trip_duration_min = tripduration/60) %>% 
+  group_by(ym) %>% 
+  select(ym, trip_duration_min) %>% 
+  summarise(Avg = mean(trip_duration_min), 
+    sd = sd(trip_duration_min)) %>% 
+  mutate(se = sd/sqrt(n()), Season = ifelse(ym %in% c("2014/10", "2014/11"), "Fall",
+                                            ifelse(ym %in% c("2014/12", "2015/1", "2015/2"), "Winter",
+                                            ifelse(ym %in% c("2015/3", "2015/4", "2015/5"), "Spring", "Summer"))))
 ```
 
 Now to plot the average trip duration (in minutes) (plus or minus standard error), with colors indicating season.
 
-<<PLOT HERE>>
+
+```{r}
+Trip_Duration_Month %>%
+  mutate(Season = ifelse(ym %in% c("2014/10", "2014/11"), "Fall",
+                                            ifelse(ym %in% c("2014/12", "2015/1", "2015/2"), "Winter",
+                                            ifelse(ym %in% c("2015/3", "2015/4", "2015/5"), "Spring", "Summer")))) %>% 
+  group_by(ym, Season) %>%
+ggplot(aes(ym, Avg, color = Season)) +
+  geom_point() +
+  geom_line(aes(group = 1)) + 
+  labs(x = "Date", y = "Duration of Average Trip (Minutes)") + 
+  theme_bw() +
+  geom_errorbar(aes(ymin = Avg - se, ymax = Avg + se))
+```
 
 There’s surprisingly not a huge range in trip durations here.
 
@@ -343,21 +358,60 @@ trip_2$wd <- wday(trip_2$start_date, label = TRUE)
 
 Now to plot the total number of trips by day of the week.
 
-PLOT HERE
+
+```{r}
+trip_2 %>%
+  group_by(wd) %>%
+  summarize(N = n()) %>%
+ggplot(aes(wd, N)) +
+  geom_point() +
+  geom_line(aes(group = 1)) + 
+  labs(x = "Day of Week", y = "Number of Trips") + 
+  theme_bw()
+```
 
 Ok, so there are definitely more trips during the week than on the weekends. I wonder if this varies by season too.
 
-PLOT HERE
+```{r}
+trip_seasons <- trip_2 %>% 
+  mutate(ym = paste(year(start_date),
+    month(start_date), sep = "/"), season = ifelse(ym %in% c("2014/10", "2014/11"), "Fall",
+                                            ifelse(ym %in% c("2014/12", "2015/1", "2015/2"), "Winter",
+                                            ifelse(ym %in% c("2015/3", "2015/4", "2015/5"), "Spring", "Summer"))))
+```
+
+
+```{r}
+trip_seasons %>%
+  group_by(wd, season) %>%
+  summarize(N = n()) %>%
+ggplot(aes(wd, N, color = season, group = season)) +
+  geom_point() +
+  geom_path() + 
+  labs(x = "Day of Week", y = "Number of Trips") + 
+  theme_bw()
+```
+
 
 So it looks like usage is relatively consistent across seasons, at least as far as the number of trips are concerned.
-
-######################################################################################################################
 
 ### Number of Trips by Time of Day
 
 How about time of day? Are people using these around commuting times during the week and later on weekends?
 
-PLOT HERE
+```{r}
+trip_seasons %>%
+  group_by(Hour = hour(start_dt), wd, season) %>%
+  summarize(N = n()) %>%
+  ggplot(aes(Hour, N, color = season, group = season)) +
+  geom_point() +
+  geom_line() + 
+  labs(x = "Hour of Day", y = "Number of Trips") + 
+  facet_wrap(~ wd) +
+  theme(legend.position = "top") +
+  theme_bw()
+```
+
 
 Wow, looks like regardless of the season, people are commuting to/from work using this service (there’s a spike between 8 and 10 AM and another between 4 and 7 PM Monday through Friday). But the weekends seem to be popular between 10 AM and 10 PM.
 
@@ -367,7 +421,20 @@ I wonder if different types of members (those who have a membership vs. those th
 
 If I were to guess, I’d think the short-term passes would be ideal for tourists or people looking for a quick weekend trip, whereas members may be more likely to continue using the service year-round. Let’s check out my assumptions by plotting, once again colored by season.
 
-PLOT HERE
+```{r}
+trip_seasons %>%
+  group_by(ym, season, usertype) %>%
+  filter(usertype == "Short-Term Pass Holder" | usertype == "Member") %>% 
+  summarize(N = n()) %>%
+ggplot(aes(ym, N, group = usertype)) +
+  geom_point(aes(shape = usertype, color = season, size = 3)) +
+  geom_line(aes(color = season)) + 
+  labs(x = "Date", y = "Total Number of Trips Per Month") + 
+  scale_shape_manual(values = c(15, 0)) +
+  scale_size(guide = "none") +
+  theme_bw()
+```
+
 
 Surprisingly (to me, at least), different types of users seem to follow similar patterns of usage. Spring and Summer are definitely the most popular times for anyone to ride a bike in the Seattle area.
 
@@ -378,9 +445,29 @@ While it may seem that the trip duration shouldn’t vary widely by member type,
 Let’s see if these time limits cause differing behaviors in our users.
 
 
-PLOT HERE
+```{r}
+start_date_ym %>% 
+  mutate(trip_duration_min = tripduration/60) %>% 
+  group_by(usertype, trip_duration_min) %>%
+    filter(usertype == "Short-Term Pass Holder" | usertype == "Member") %>% 
+ggplot(aes(trip_duration_min)) +
+  geom_histogram(color = "blue", fill = "lightblue") +
+  geom_vline(aes(xintercept = 45), lty = 2) +
+  geom_vline(aes(xintercept = 30), lty = 2) +
+  xlim(0, 60) +
+  labs(x = "Trip Duration (Minutes)", y = "Number of Trips") + 
+  facet_grid(~ usertype) +
+  theme_bw() 
+```
+
 
 Ok, so our members are pretty good about making sure that they return their bike before they incur extra charges, but the short-term pass holders frequently go over their time limit. I wonder how the cost of a trip varies for members and pass holders. Let’s try to calculate the cost of a trip.
+
+```{r}
+trip_2 <- trip_2 %>% 
+  mutate(tripduration_m = tripduration/60)
+```
+
 
 ```{r, eval = FALSE}
 trip_cost <- trip_2 %>% mutate(cost = ifelse(usertype == "Member" & 
@@ -396,7 +483,18 @@ trip_cost <- trip_2 %>% mutate(cost = ifelse(usertype == "Member" &
 
 That was a complicated nested if/else statement! Let’s see how much these folks are paying in additional fees!
 
-PLOT HERE
+```{r}
+trip_cost %>% 
+  group_by(tripduration_m, usertype, cost) %>%
+  filter(usertype == "Short-Term Pass Holder" | usertype == "Member") %>% 
+  filter(cost != "0") %>% 
+  ggplot(aes(cost)) +
+  geom_histogram() +
+  labs(x = "Additional Fees ($)", y = "Number of Trips") + 
+  facet_wrap(~ usertype) +
+  theme_bw()
+```
+
 
 Looks like short-term pass holders (who are already paying a higher price per day of biking), are also paying lots of extra fees. This could be because they are unfamiliar with the pricing structure and don’t realize they need to return their bike to a station within 30 minutes without getting charged. It is also possible that short-term users may be tourists who don’t know their way around as easily, and thus can’t find their way to a station within the time limit.
 
@@ -412,11 +510,12 @@ hist(trip_age$age, main = "Member Age", xlab = "Number of Riders",
     col = "#56B4E9", breaks = 25)
 ```
 
-PLOT HERE
-
 My first instinct here is to say “Wow! There’s a lot of 20 and 30-somethings that use this service!” But this figure (and these data) may be a little misleading. You see, we don’t have any sort of Rider ID number, meaning we can’t take “individual activity level” into account. So we can’t tell if the tallest spike is because 5 very athletic 28-year-olds went on 4,000 trips each, or if 100 people went on 200 trips each, or if there were 20,000 28-year-olds who each only used the service once.
 
 The same problem would arise if we looked at gender, so I’m just going to move beyond demographics.
+
+
+
 
 
 
@@ -468,10 +567,6 @@ Where else does this dataset need to be cleaned up? Let’s look for any missing
 summary(weather)
 ```
 
-```{r}
-
-```
-
 Ok, so we have one NA for “Mean_Temperature_F”, “Max_Gust_Speed_MPH” seems to be represented as a character vector because it has “-” representing NA values, and we have 361 unlabelled Events.
 
 Max Gust Speed should be the easiest one to fix, so we’ll start there.
@@ -499,7 +594,7 @@ Ok, so we’re looking for the Mean Temperature on February 14, 2016 in the zipc
 Time to substitute in that value.
 
 ```{r}
-weather[490, "Mean_Temperature_F"] <- "50"
+weather[490, "Mean_Temperature_F"] <- 50
 ```
 
 Perfect. Now what to do with the unlabelled “Event” categories. The dataset “ReadMe” file from Pronto! doesn’t include any information about this weather dataset. The only thing I can think to do is refer to the Event as “Other”.
@@ -512,10 +607,46 @@ weather$Events <- as.factor(weather$Events)
 Ok, we’re in good shape. Now to do a few quick visualizations.
 
 ### Temperature
+#### Minimum
+```{r}
+weather %>%
+  group_by(Date, Min_TemperatureF) %>% 
+  ggplot(aes(x = Date, y = Min_TemperatureF)) +
+  geom_line(group = 2) +
+  theme_bw()
+```
+
+#### Mean
+```{r}
+weather %>%
+  group_by(Date, Mean_Temperature_F) %>% 
+  ggplot(aes(x = Date, y = Mean_Temperature_F)) +
+  geom_line(group = 2) +
+  theme_bw()
+```
+
+#### Maximum
+```{r}
+weather %>%
+  group_by(Date, Max_Temperature_F) %>% 
+  ggplot(aes(x = Date, y = Max_Temperature_F)) +
+  geom_line(group = 2) +
+  theme_bw()
+
+```
+
+### Events
+```{r}
+weather %>% 
+  group_by(Events) %>% 
+ggplot(aes(x = Events)) +
+  geom_bar() +
+  labs(y = "Number of Events")
+```
 
 ### Combining Weather and Trip Datasets
 
-Good, so we can now see some parts of the weather data. Let’s combine the weather data with our trip data. Let’s try a  left join from the dplyr package.
+Good, so we can now see some parts of the weather data. Let’s combine the weather data with our trip data. Let’s try a  `left join` from the `dplyr` package.
 
 ```{r}
 # Make a copy of the data frame
@@ -532,14 +663,34 @@ trip_weather <- left_join(trip_3, weather, by = "Date")
 
 Ok. Now let’s see how the number of trips per day is influenced by weather (mean temperature, rounded to the nearest 5 degrees F)
 
-```{r}
+```{r, echo = FALSE}
+#create round function
+mround <- function(x,base){ 
+        base*round(x/base) 
+} 
+```
 
+```{r}
+trip_weather$Mean_Temperature_F <- mround(trip_weather$Mean_Temperature_F, 5)
+trip_weather %>% 
+  group_by(Mean_Temperature_F) %>%
+  summarize(N = n()) %>%
+  ggplot(aes(x = Mean_Temperature_F, y = N)) +
+  geom_line() + 
+  labs(x = "Temperature Rounded to Nearest 5 degrees F", y = "Number of Trips") + 
+  theme_bw()
 ```
 
 So, as expected, there are more trips when the weather is mild but not too warm (over 70F) or too cold (below 50F). However, this figure may be influenced by the overall number of days that exhibited each mean temperature. Let’s try to standardize that.
 
 ```{r}
-
+ trip_weather %>% 
+  group_by(Mean_Temperature_F) %>%
+  summarize(N = n()) %>% 
+  ggplot(aes(x = Mean_Temperature_F, y = length(Mean_Temperature_F)/N)) +
+  geom_line() + 
+  labs(x = "Temperature Rounded to Nearest 5 degrees F", y = "Number of Trips / Number of Days at Temperature") + 
+  theme_bw()
 ```
 
 So when we standardize our measurements, correcting for the number of days that actually reached each temperature, we see a steady increase in the number of trips until around 75F where the trend levels off. People are more likely to ride a bike when it’s warm outside.
@@ -551,7 +702,15 @@ If you’ve ever heard of Seattle, you probably hear that it rains all the time 
 We’ll start with a figure standardized for number of days at a precipitation level, rounded to the nearest 0.2 inches.
 
 ```{r}
+trip_weather$Precipitation_In <- mround(trip_weather$Precipitation_In, 0.2)
 
+trip_weather %>% 
+  group_by(Precipitation_In) %>%
+  summarize(N = n()) %>% 
+ggplot(aes(Precipitation_In, N)) +
+  geom_line() +
+  theme_bw()
+  
 ```
 
 Looks like even Seattleites have a limit when it comes to riding a bike in the rain. The more it rained, the fewer trips were taken per day.
@@ -574,4 +733,3 @@ Hold discounts in fall/winter
 Find a way to alert short-term users that their time limit will be ending soon, and where the nearest station is to them at that time
 Consider a 3rd membership option: “Commuter”. This may allow users to take bikes between 7-10 AM and 4-7 PM for free, but operate under a different time limit schedule during other times of day.
 As always, I appreciate any and all feedback from my work and appreciate you taking the time to see what I’ve done. Thanks!
-
