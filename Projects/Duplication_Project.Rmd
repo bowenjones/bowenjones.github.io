@@ -38,13 +38,13 @@ library(caret)
 All of the data can be downloaded from the bicycle-sharing service [“Pronto!”’s website](https://www.prontocycleshare.com/data) or from [Kaggle](https://www.kaggle.com/pronto/cycle-share-dataset). This project contains 3 data sets and I’ll import and inspect each data file independently.
 
 ```{r, warning=FALSE, message=FALSE}
-station <- read.csv(file = "2016_station_data.csv", header = TRUE, 
+station <- read.csv(file = "./Duplication_Project_files/2016_station_data.csv", header = TRUE, 
     stringsAsFactors = FALSE)
 
-trip <- read.csv(file = "2016_trip_data.csv", header = TRUE, 
+trip <- read.csv(file = "./Duplication_Project_files/2016_trip_data.csv", header = TRUE, 
     stringsAsFactors = FALSE)
 
-weather <- read.csv(file = "2016_weather_data.csv", header = TRUE, 
+weather <- read.csv(file = "./Duplication_Project_files/2016_weather_data.csv", header = TRUE, 
     stringsAsFactors = FALSE)
 ```
 
@@ -469,7 +469,7 @@ trip_2 <- trip_2 %>%
 ```
 
 
-```{r, eval = FALSE}
+```{r}
 trip_cost <- trip_2 %>% mutate(cost = ifelse(usertype == "Member" & 
     tripduration_m <= 45, 0, ifelse(usertype == "Member" & tripduration_m > 
     45 & tripduration_m <= 75, 2, ifelse(usertype == "Member" & 
@@ -489,7 +489,7 @@ trip_cost %>%
   filter(usertype == "Short-Term Pass Holder" | usertype == "Member") %>% 
   filter(cost != "0") %>% 
   ggplot(aes(cost)) +
-  geom_histogram() +
+  geom_histogram(stat = "count") +
   labs(x = "Additional Fees ($)", y = "Number of Trips") + 
   facet_wrap(~ usertype) +
   theme_bw()
