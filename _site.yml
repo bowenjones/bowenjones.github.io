@@ -5,8 +5,6 @@ navbar:
   left:
   - text: Home
     href: index.html
-  - text: bookdown
-    href: bookdown.html
   - text: Notes
     href: Notes.html
   - text: LinkedIn
