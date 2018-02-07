@@ -1,8 +1,0 @@
----
-title: "Projects"
-author: "Bowen Jones"
-date: '`r format(Sys.time(), "%b %d, %Y")`'
-output: html_document
----
-
-* [Bike Sharing](./Projects/Duplication_Project.html)

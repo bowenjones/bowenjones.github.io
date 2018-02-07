@@ -1,21 +1,25 @@
-title: "Basic Web Page"
-output_dir: "."
+title: Basic Web Page
+output_dir: '.'
 navbar:
-  title: "Bowen W Jones"
+  title: Bowen W Jones
   left:
-    - text: "Home"
-      href: index.html
-    - text: "bookdown"
-      href: bookdown.html
-    - text: "Notes"
-      href: Notes.html
-    - text: "LinkedIn"
-      href: https://www.linkedin.com/in/jonesb93/
-    - text: ""
-      href: 1.html
-    - text: "Projects"
-      href: Projects.html
+  - text: Home
+    href: index.html
+  - text: bookdown
+    href: bookdown.html
+  - text: Notes
+    href: Notes.html
+  - text: LinkedIn
+    href: https://www.linkedin.com/in/jonesb93/
+  - text: ''
+    href: 1.html
+  - text: Portfolio
+    href: Portfolio.html
 output:
   html_document:
     theme: yeti
     highlight: textmate
+    lib_dir: site_libs
+    self_contained: no
+name: bowenjones.github.io
+

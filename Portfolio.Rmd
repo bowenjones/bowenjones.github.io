@@ -1,0 +1,15 @@
+---
+title: "Portfolio"
+author: ""
+date: '`r format(Sys.time(), "%b %d, %Y")`'
+output: html_document
+---
+
+- [Bicycle Sharing in Seattle](./Projects/Duplication_Project.html)
+    - A duplication project from Data Science 1 (see [original](https://amber.rbind.io/projects/2016/11/10/bicyclesseattle/)) -- Fall 2017
+  
+  
+- R Graphics Cookbook -- Capstone Spring 2018
+    - [Chapter 2: Quickly Exploring Data](./Projects/R_cookbook/Chapter_2.html)
+    - [Chapter 3: Bar Graphs](./Projects/R_cookbook/Chapter_3.html)
+    - [Chapter 4: Line Graphs](./Projects/R_cookbook/Chapter_4.html)

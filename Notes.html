@@ -268,20 +268,20 @@ $(document).ready(function () {
 <pre class="r"><code>flips &lt;- rbinom(100, 1, .1)</code></pre>
 <p>Using the <em>which</em> function,</p>
 <pre class="r"><code>which(flips == 1)[1] </code></pre>
-<pre><code>## [1] 13</code></pre>
+<pre><code>## [1] 12</code></pre>
 <p>For simulation method use the <em>replicate</em> function, yielding a list of the first appearance of a success for each of 10 trials</p>
 <pre class="r"><code>replicate(10, which(rbinom(100, 1, .1)==1)[1])</code></pre>
-<pre><code>##  [1] 10  3  8 15  1  4  8  2 17 10</code></pre>
+<pre><code>##  [1]  9  2  7 14  3  3  7  1 16  9</code></pre>
 <p>To determine expected value, run mean</p>
 <pre class="r"><code>mean(sum(replicate(10, which(rbinom(100, 1, .1)==1)[1])))</code></pre>
-<pre><code>## [1] 91</code></pre>
+<pre><code>## [1] 88</code></pre>
 <div id="introducing-rgeom" class="section level2">
 <h2>Introducing rgeom</h2>
 <p><em>style:</em> rgeom(draws, probability)</p>
 <p>X~Geom(<em>p</em>)</p>
 <pre class="r"><code>geom &lt;- rgeom(100000, .1)
 mean(geom)</code></pre>
-<pre><code>## [1] 8.99226</code></pre>
+<pre><code>## [1] 8.99241</code></pre>
 <p><span class="math inline">\(E(X) = (1/p) - 1\)</span></p>
 </div>
 </div>
