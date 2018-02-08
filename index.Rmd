@@ -8,4 +8,6 @@ output: html_document
 knitr::include_graphics("success.jpg")
 ```
 
+***  
+
 *This website was last rendered on `r format(Sys.time(), "%b %d, %Y")`.*
