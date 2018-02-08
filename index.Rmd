@@ -1,10 +1,11 @@
 ---
 title: "Welcome"
-author: "Bowen Jones"
+author: 
 output: html_document
 ---
 
 ```{r, echo=FALSE}
-knitr::include_graphics("275px-A_small_cup_of_coffee.JPG")
+knitr::include_graphics("success.jpg")
 ```
 
+*This website was last rendered on `r format(Sys.time(), "%b %d, %Y")`.*
