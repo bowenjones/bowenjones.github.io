@@ -13,3 +13,4 @@ output: html_document
     - [Chapter 2: Quickly Exploring Data](./Projects/R_cookbook/Chapter_2.html)
     - [Chapter 3: Bar Graphs](./Projects/R_cookbook/Chapter_3.html)
     - [Chapter 4: Line Graphs](./Projects/R_cookbook/Chapter_4.html)
+    - [Chapter 5: Scatter Plots](./Projects/R_cookbook/Chapter_5.html)
