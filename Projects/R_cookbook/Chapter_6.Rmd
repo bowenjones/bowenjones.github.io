@@ -1,0 +1,254 @@
+---
+title: "R Graphics Cookbook Chapter 6"
+author: "Bowen W. Jones"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+### Chapter 6. Summarized Data Distributions
+
+```{r}
+library(ggplot2)
+library(gcookbook)
+library(MASS)
+library(plyr)
+```
+
+### Section 6.1. Making a Basic Histogram
+
+```{r}
+# Figure 6-1
+ggplot(faithful, aes(waiting)) +
+  geom_histogram()
+
+# Figure 6-2
+ggplot(faithful, aes(waiting)) +
+  geom_histogram(binwidth = 5, fill = "white", colour = "black")
+
+binsize <- diff(range(faithful$waiting)) / 15
+ggplot(faithful, aes(waiting)) +
+  geom_histogram(binwidth=binsize, fill = "white", color = "black")
+
+# Figure 6-3
+h <- ggplot(faithful, aes(waiting))
+h + geom_histogram(binwidth = 8, fill = "white", color = "black", origin = 31)
+h + geom_histogram(binwidth = 8, fill = "white", color = "black", origin = 35)
+```
+
+### Section 6.2. Making Multiple Histograms from Grouped Data
+
+```{r}
+# Figure 6-4
+ggplot(birthwt, aes(bwt)) +
+  geom_histogram(fill = "white", color = "black") +
+  facet_grid(smoke ~ .)
+
+bw <- birthwt
+bw$smoke <- factor(bw$smoke)
+bw$smoke <- revalue(bw$smoke, c("0"="No Smoke","1" = "Smoke"))
+ggplot(bw, aes(bwt)) +
+  geom_histogram(fill = "white", color = "black") +
+  facet_grid(smoke ~ .)
+
+# Figure 6-5
+ggplot(bw, aes(bwt))  +
+  geom_histogram(fill = "white", color = "black") +
+  facet_grid(race ~ .)
+ggplot(bw, aes(bwt))  +
+  geom_histogram(fill = "white", color = "black") +
+  facet_grid(race ~ ., scales = "free")
+
+# Figure 6-6
+ggplot(bw, aes(bwt, fill = smoke)) +
+  geom_histogram(position = "identity", alpha = 0.4)
+```
+
+### Section 6.3. Making a Density Curve
+
+```{r}
+# Figure 6-7
+ggplot(faithful, aes(waiting)) +
+  geom_density()
+ggplot(faithful, aes(waiting)) +
+  geom_line(stat = "density") +
+  expand_limits(y=0)
+
+# Figure 6-8
+ggplot(faithful, aes(waiting)) +
+  geom_line(stat = "density", adjust = 0.25, color = "red") +
+  geom_line(stat = "density") +
+  geom_line(stat = "density", adjust = 2, color = "blue")
+
+# Figure 6-9
+ggplot(faithful, aes(waiting)) +
+  geom_density(fill = "blue", alpha = 0.2) +
+  xlim(35, 105)
+ggplot(faithful, aes(waiting)) +
+  geom_density(fill = "blue", color = NA, alpha = 0.2) +
+  geom_line(stat = "density") +
+  xlim(35, 105)
+
+# Figure 6-10
+ggplot(faithful, aes(x = waiting, y = ..density..)) +
+  geom_histogram(fill = "cornsilk", color = "grey60", size = 0.2) +
+  geom_density() +
+  xlim(35, 105)
+```
+
+### Section 6.4. Making Multiple Density Curves from Grouped Data
+
+```{r}
+# Figure 6-11
+ggplot(bw, aes(bwt, color = smoke)) +
+  geom_density()
+ggplot(bw, aes(bwt, fill = smoke)) +
+  geom_density(alpha = 0.3)
+
+# Figure 6-12
+ggplot(bw, aes(bwt)) +
+  geom_density() +
+  facet_grid(smoke ~ .)
+
+# Figure 6-13
+ggplot(bw, aes(bwt, y = ..density..)) +
+  geom_histogram(binwidth = 200, fill = "cornsilk", color = "grey60", size = 0.2) +
+  geom_density() +
+  facet_grid(smoke ~ .)
+```
+
+### Section 6.5. Making a Frequency Polygon
+
+```{r}
+# Figure 6-14
+ggplot(faithful, aes(waiting)) +
+  geom_freqpoly(binwidth = 4)
+
+binsize <- diff(range(faithful$waiting))/15
+ggplot(faithful, aes(waiting)) +
+  geom_freqpoly(binwidth = binsize)
+```
+
+### Section 6.6. Making a Basic Box Plot
+
+```{r}
+# Figure 6-15
+ggplot(birthwt, aes(factor(race), bwt)) +
+  geom_boxplot()
+
+# Figure 6-17
+ggplot(birthwt, aes(factor(race), bwt)) +
+  geom_boxplot(width = 0.5)
+
+# Figure 6-18
+ggplot(birthwt, aes(factor(race), bwt)) +
+  geom_boxplot(outliser.size = 1.5, outlier.shape = 21)
+```
+
+### Section 6.7. Adding Notches to a Box Plot
+
+```{r}
+# Figure 6-19
+ggplot(birthwt, aes(factor(race), bwt)) +
+  geom_boxplot(notch = TRUE)
+```
+
+### Section 6.8. Adding Means to a Box Plot
+
+```{r}
+# Figure 6-20
+ggplot(birthwt, aes(factor(race), bwt)) +
+  geom_boxplot() +
+  stat_summary(fun.y = "mean", geom = "point", shape = 23, size = 3, fill = "white")
+```
+
+### Section 3.9. Making a Violin Plot
+
+```{r}
+# Figure 6-21
+p <- ggplot(heightweight, aes(sex, heightIn))
+p + geom_violin()
+
+# Figure 6-22
+p + geom_violin() + geom_boxplot(width = 0.1, fill = "black", outlier.color = NA) +
+  stat_summary(fun.y = "median", geom = "point", fill = "white", shape = 21, size = 2.5)
+
+# Figure 6-23
+p + geom_violin(trim = FALSE)
+
+# Figure 6-24
+p + geom_violin(scale = "count")
+
+# Figure 6-25
+p + geom_violin(adjust = 2)
+p + geom_violin(adjust = 0.5)
+```
+
+### Section 6.10. Making a Dot Plot
+
+```{r}
+# Figure 6-26
+countries2009 <- subset(countries, Year == 2009 & healthexp > 2000)
+p <- ggplot(countries2009, aes(infmortality))
+p + geom_dotplot()
+
+# Figure 6-27
+p + geom_dotplot(binwidth = 0.25) + geom_rug() + 
+  scale_y_continuous(breaks = NULL) +
+  theme(axis.title.y = element_blank())
+
+# Figure 6-28
+p + geom_dotplot(method = "histodot", binwidth = 0.25) + geom_rug() + 
+  scale_y_continuous(breaks = NULL) +
+  theme(axis.title.y = element_blank())
+
+# Figure 6-29
+p + geom_dotplot(binwidth = 0.25, stackdir = "center") + geom_rug() + 
+  scale_y_continuous(breaks = NULL) +
+  theme(axis.title.y = element_blank())
+p + geom_dotplot(binwidth = 0.25, stackdir = "centerwhole") + geom_rug() + 
+  scale_y_continuous(breaks = NULL) +
+  theme(axis.title.y = element_blank())
+
+```
+
+### Section 6.11. Making Multiple Dot Plots for Grouped Data
+
+```{r}
+# Figure 6-30
+ggplot(heightweight, aes(sex, heightIn)) +
+  geom_dotplot(binaxis = "y", binwidth = 0.5, stackdir = "center")
+
+# Figure 6-31
+ggplot(heightweight, aes(sex, heightIn)) +
+  geom_boxplot(outlier.color = NA, width = 0.4) +
+  geom_dotplot(binaxis = "y", binwidth = 0.5, stackdir = "center", fill = NA)
+
+# Figure 6-32
+ggplot(heightweight, aes(sex, heightIn)) +
+  geom_boxplot(aes(as.numeric(sex) + .2, group = sex), width = 0.25) +
+  geom_dotplot(aes(as.numeric(sex) - .2, group = sex), binaxis = "y", binwidth = 0.5, stackdir = "center") +
+    scale_x_continuous(breaks = 1:nlevels(heightweight$sex),
+                       labels = levels(heightweight$sex))
+```
+
+### Section 6.12. Making a Density Plot of Two-Dimensional Data
+
+```{r}
+# Figure 6-33
+p <- ggplot(faithful, aes(eruptions, waiting))
+p + geom_point() + stat_density2d()
+
+p + stat_density2d(aes(color = ..level..))
+
+# Figure 6-34
+p + stat_density2d(aes(fill = ..density..), geom = "raster", contour = FALSE)
+p + geom_point() + 
+  stat_density2d(aes(alpha = ..density..), geom = "tile", contour = FALSE)
+
+# Figure 6-35
+p + stat_density2d(aes(fill = ..density..), geom = "raster", contour = FALSE, h = c(.5, 5))
+```
+
+
+<hr>
+END!

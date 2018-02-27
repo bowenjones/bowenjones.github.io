@@ -1,0 +1,385 @@
+---
+title: "R Graphics Cookbook Chapter 5"
+author: "Bowen W. Jones"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+### Chapter 5. Scatter Plots
+
+```{r}
+library(ggplot2)
+library(gcookbook)
+```
+
+### Section 5.1. Making a Basic Scatterplot
+
+```{r}
+# Figure 5-1
+ggplot(heightweight, aes(ageYear, heightIn)) +
+  geom_point()
+
+# Figure 5-2
+ggplot(heightweight, aes(ageYear, heightIn)) +
+  geom_point(shape = 21)
+ggplot(heightweight, aes(ageYear, heightIn)) +
+  geom_point(size = 1.5)
+
+# Figure 5-3
+ggplot(heightweight, aes(ageYear, heightIn)) +
+  geom_point(shape = 16)
+ggplot(heightweight, aes(ageYear, heightIn)) +
+  geom_point(shape = 19)
+
+```
+
+### Section 5.2. Grouping Data Points by a Variable Using Shape or Color
+
+```{r}
+# Figure 5-4
+ggplot(heightweight, aes(ageYear, heightIn, color = sex)) +
+  geom_point()
+ggplot(heightweight, aes(ageYear, heightIn, shape = sex)) +
+  geom_point()
+
+# Figure 5-5
+ggplot(heightweight, aes(ageYear, heightIn, shape = sex, color = sex)) +
+  geom_point()
+ggplot(heightweight, aes(ageYear, heightIn, shape = sex)) +
+  geom_point() +
+  scale_shape_manual(values=c(1,2)) +
+  scale_color_brewer(palette="Set1")
+
+```
+
+### Section 5.3. Using Different Point Shapes
+
+```{r}
+# Figure 5-6
+ggplot(heightweight, aes(ageYear, heightIn)) +
+  geom_point(shape = 3)
+ggplot(heightweight, aes(ageYear, heightIn, shape = sex)) +
+  geom_point(size = 3) +
+  scale_shape_manual(values = c(1, 4))
+
+# Figure 5-8
+hw <- heightweight
+hw$weightGroup <- cut(hw$weightLb, breaks = c(-Inf, 100, Inf),
+                      labels = c("< 100", ">= 100"))
+ggplot(hw, aes(ageYear, heightIn, shape = sex, fill = weightGroup)) +
+  geom_point(size = 2.5) +
+  scale_shape_manual(values = c(21, 24)) +
+  scale_fill_manual(values = c(NA, "black"),
+                    guide = guide_legend(override.aes = list(shape = 21)))
+```
+
+### Section 5.4. Mapping a Continuous Variable to Color or Size
+
+```{r}
+# Figure 5-9
+ggplot(heightweight, aes(ageYear, heightIn, color = weightLb)) +
+  geom_point()
+ggplot(heightweight, aes(ageYear, heightIn, size = weightLb)) +
+  geom_point()
+
+# Figure 5-10
+
+ggplot(heightweight, aes(weightLb, heightIn, fill = ageYear)) +
+  geom_point(shape = 21, size = 2.5) +
+  scale_fill_gradient(low = "black", high = "white")
+ggplot(heightweight, aes(weightLb, heightIn, fill = ageYear)) +
+  geom_point(shape = 21, size = 2.5) +
+  scale_fill_gradient(low = "black", high = "white", breaks = 12:17,
+                      guide = guide_legend())
+# Figure 5-11
+ggplot(heightweight, aes(ageYear, heightIn, size = weightLb, color = sex)) +
+  geom_point(alpha = 0.5) +
+  scale_size_area() +
+  scale_color_brewer(palette = "Set1")
+```
+
+### Section 5.5 Dealing with Overplotting
+
+```{r}
+# Figure 5-12
+sp <- ggplot(diamonds, aes(carat, price))
+sp + geom_point()
+
+# Figure 5-13
+sp + geom_point(alpha = 0.1)
+sp + geom_point(alpha = 0.01)
+
+# Figure 5-14
+sp + stat_bin_2d()
+sp + stat_bin_2d(bins = 50) +
+  scale_fill_gradient(low = "lightblue", high = "red", limits = c(0, 6000))
+
+# Figure 5-15
+library(hexbin)
+sp + stat_binhex() +
+  scale_fill_gradient(low = "lightblue", high = "red", limits = c(0, 8000))
+sp + stat_binhex() +
+  scale_fill_gradient(low = "lightblue", high = "red", breaks  = c(0,250,500,1000,2000,4000,6000),   limits = c(0, 6000))
+
+# Figure 5-16
+sp1 <- ggplot(ChickWeight, aes(Time, weight))
+sp1 + geom_point()
+sp1 + geom_point(position = "jitter")
+sp1 + geom_point(position = position_jitter(width = 0.5, height = 0))
+
+# Figure 5-17
+sp1 + geom_boxplot(aes(group = Time))
+
+```
+
+### Section 5.6. Adding Fitted Regression Model Lines
+
+```{r}
+# Figure 5-18
+sp <- ggplot(heightweight, aes(ageYear, heightIn))
+sp + geom_point() +
+  stat_smooth(method = lm)
+sp + geom_point() +
+  stat_smooth(method = lm, level = 0.99)
+sp + geom_point() +
+  stat_smooth(method = lm, se = FALSE)
+
+# Figure 5-19
+sp + geom_point(color = "grey60") +
+  stat_smooth()
+sp + geom_point(color = "grey60") +
+  stat_smooth(method = loess)
+
+# Figure 5-20
+library(MASS)
+b <- biopsy
+b$classn[b$class=="benign"] <- 0
+b$classn[b$class=="malignant"] <- 1
+ggplot(b, aes(V1, classn)) +
+  geom_point(position = position_jitter(width = 0.3, height = 0.06), alpha = 0.4,
+             shape = 21, size = 1.5) +
+  stat_smooth(method = glm, family = binomial)
+
+# Figure 5-21
+sps <- ggplot(heightweight, aes(ageYear, heightIn, color = sex)) +
+  geom_point() +
+  scale_color_brewer(palette = "Set1")
+sps + geom_smooth()
+sps + geom_smooth(method = lm, se = FALSE, fullrange = TRUE)
+```
+
+### Section 5.7. Adding Fitted Lines from an Existing Model
+
+```{r}
+# Figure 5-22
+model <- lm(heightIn ~ ageYear + I(ageYear^2), data = heightweight)
+xmin <- min(heightweight$ageYear)
+xmax <- max(heightweight$ageYear)
+predicted <- data.frame(ageYear = seq(xmin, xmax, length.out = 100))
+predicted$heightIn <- predict(model, predicted)
+sp <- ggplot(heightweight, aes(ageYear, heightIn)) +
+  geom_point(color = "grey40")
+sp + geom_line(data = predicted, size = 1)
+
+# Predict values of yvar from xvar given a model
+
+predictvals <- function(model, xvar, yvar, xrange = NULL, samples = 100, ...) {
+  if(is.null(xrange)) {
+    if(any(class(model) %in% c("lm", "glm")))
+      xrange <- range(model$model[[xvar]])
+    else if (any(class(model) %in% "loess"))
+      xrange <- range(model$x)
+  }
+  
+  newdata <- data.frame(x = seq(xrange[1], xrange[2], length.out = samples))
+  names(newdata) <- xvar
+  newdata[[yvar]] <- predict(model, newdata = newdata, ...)
+  newdata
+}
+
+modlinear <- lm(heightIn ~ ageYear, heightweight)
+modloess <- loess(heightIn ~ ageYear, heightweight)
+lm_predicted <- predictvals(modlinear, "ageYear", "heightIn")
+loess_predicted <- predictvals(modloess, "ageYear", "heightIn")
+sp + geom_line(data = lm_predicted, color = "red", size = 0.8) +
+  geom_line(data = loess_predicted, color = "blue", size = 0.8)
+
+# Figure 5-23
+library(MASS)
+b <- biopsy
+
+b$classn[b$class=="benign"] <- 0
+b$classn[b$class=="malignant"] <- 1
+
+# Perform logistic regression
+fitlogistic <- glm(classn ~ V1, b, family = binomial)
+
+# Get predicted values
+glm_predicted <- predictvals(fitlogistic, "V1", "classn", type = "response")
+
+ggplot(b, aes(V1, classn)) +
+  geom_point(position=position_jitter(width=.3, height=0.8), alpha = 0.4,
+             shape = 21, size = 1.5) +
+  geom_line(data=glm_predicted, color = "#1177FF", size = 1)
+```
+
+### Section 5.8. Adding Fitted Lines from Multiple Existing Models
+
+```{r}
+# Figure 5-24
+library(plyr)
+make_model <- function(data) {
+  lm(heightIn ~ ageYear, data)
+}
+models <- dlply(heightweight, "sex", .fun=make_model)
+predvals <- ldply(models, .fun = predictvals, xvar = "ageYear", yvar= "heightIn")
+
+ggplot(heightweight, aes(ageYear, heightIn, color = sex)) +
+  geom_point() + geom_line(data = predvals)
+ggplot(heightweight, aes(ageYear, heightIn)) +
+  geom_point() + geom_line(data = predvals) + facet_grid(~ sex)
+
+# Figure 5-25
+predvals <- ldply(models, .fun = predictvals, xvar = "ageYear", yvar= "heightIn", 
+                  xrange = range(heightweight$ageYear))
+ggplot(heightweight, aes(ageYear, heightIn, color = sex)) +
+  geom_point() + geom_line(data = predvals)
+```
+
+### Section 5.9. Adding Annotations with Model Coefficients
+
+```{r}
+# Figure 5-26
+model <- lm(heightIn ~ ageYear, heightweight)
+# Generate prediction data
+pred <- predictvals(model, "ageYear", "heightIn")
+sp <- ggplot(heightweight, aes(ageYear, heightIn)) +
+  geom_point() + geom_line(data = pred)
+sp + annotate("text", label = "r^2 = 0.42", x = 16.5, y = 52)
+sp + annotate("text", label = "r^2 == 0.42", parse = TRUE, x = 16.5, y = 52)
+
+# Figure 5-27
+eqn <- as.character(as.expression(
+  substitute(italic(y) == a + b * italic(x) * "," ~~  italic(r)^2 ~ "=" ~ r2,
+             list(a = format(coef(model)[1], digits = 3),
+                  b = format(coef(model)[2], digits = 3),
+                  r2 = format(summary(model)$r.squared, digits = 2)
+                  ))))
+sp + annotate("text", label = eqn, parse = TRUE, x = Inf, y = -Inf, hjust = 1.1, vjust = -0.5)
+```
+
+### Section 5.10. Adding Marginal Rugs to a Scatterplot
+
+```{r}
+# Figure 5-28
+ggplot(faithful, aes(eruptions, waiting)) +
+  geom_point() +
+  geom_rug()
+
+# Figure 5-29
+ggplot(faithful, aes(eruptions, waiting)) +
+  geom_point() +
+  geom_rug(position = "jitter", size = 0.2)
+
+```
+
+### Section 5.11. Labeling Point in a Scatterplot
+
+```{r}
+# Figure 5-30
+sp <- ggplot(subset(countries, Year==2009 & healthexp>2000), aes(healthexp, infmortality)) + geom_point()
+sp + annotate("text", x = 4350, y = 5.4, label = "Canada") +
+  annotate("text", x = 7400, y = 6.8, label = "USA")
+sp + geom_text(aes(label = Name), size = 4)
+
+# Figure 5-31
+sp + geom_text(aes(label = Name), size = 4, vjust = 0)
+sp + geom_text(aes(y = infmortality + 0.1, label = Name), size = 4, vjust = 0)
+
+# Figure 5-32
+sp + geom_text(aes(label = Name), size = 4, hjust = 0)
+sp + geom_text(aes(x = healthexp+100, label = Name), size = 4, vjust = 0)
+
+# Figure 5-33
+cdat <- subset(countries, Year==2009 & healthexp>2000)
+cdat$Name1 <- cdat$Name
+idx <- cdat$Name1 %in% c("Canada", "Ireland", "United Kingdom", "United States", "New Zealand", "Iceland", "Japan", "Luxembourg", "Netherlands", "Switzerland")
+cdat$Name1[!idx] <- NA
+ggplot(cdat, aes(healthexp, infmortality)) +
+  geom_point() +
+  geom_text(aes(x = healthexp+100, label = Name1), size = 4, hjust = 0) +
+  xlim(2000, 10000)
+```
+
+### Section 5.12. Creating a Balloon Plot
+
+```{r}
+# Figure 5-34
+cdat <- subset(countries, Year == 2009 & 
+                 Name %in% c("Canada", "Ireland", "United Kingdom", "United States", "New Zealand", "Iceland", "Japan", "Luxembourg", "Netherlands", "Switzerland"))
+p <- ggplot(cdat, aes(healthexp, infmortality, size = GDP)) +
+  geom_point(shape = 21, color = "black", fill = "cornsilk")
+p
+p + scale_size_area(max_size = 15)
+
+# Figure 5-35
+hec <- HairEyeColor[,,"Male"] + HairEyeColor[,,"Female"]
+library(reshape2)
+hec <- melt(hec, value.name = "count")
+
+ggplot(hec, aes(Eye, Hair)) +
+  geom_point(aes(size = count), shape = 21, color = "black", fill = "cornsilk") +
+  scale_size_area(max_size = 20, guide = FALSE) +
+  geom_text(aes(y = as.numeric(Hair)-sqrt(count)/22, label = count), vjust = 1, color = "grey60", size = 4)
+```
+
+### Section 5.13. Making a Scatterplot Matrix
+
+```{r}
+# Figure 5-36
+c2009 <- subset(countries, Year == 2009,
+                select = c(Name, GDP, laborrate, healthexp, infmortality))
+pairs(c2009[,2:5])
+
+# Figure 5-37
+panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor, ...) {
+  usr <- par("usr")
+  on.exit(par(usr))
+  par(usr = c(0, 1, 0, 1))
+  r <- abs(cor(x, y, use = "complete.obs"))
+  txt <- format(c(r, 0.123456789), digits = digits)[1]
+  txt <- paste(prefix, txt, sep = "")
+  if(missing(cex.cor)) cex.cor <- 0.8/strwidth(txt)
+  text(0.5, 0.5, txt, cex = cex.cor * (1 + r) / 2)
+}
+
+panel.hist <- function(x, ...) {
+  usr <- par("usr")
+  on.exit(par(usr))
+  par(usr = c(usr[1:2], 0, 1.5))
+  h <- hist(x, plot = FALSE)
+  breaks <- h$breaks
+  nB <- length(breaks)
+  y <- h$counts
+  y <- y/max(y)
+  rect(breaks[-nB], 0, breaks[-1], y, col = "white", ...)
+}
+  
+pairs(c2009[,2:5], upper.panel = panel.cor,
+              diag.panel = panel.hist,
+              lower.panel = panel.smooth)
+# Figure 5-38
+panel.lm <- function (x, y, col = par("col"), bg = NA, pch = par("pch"),
+                      cex = 1, col.smooth = "black",...) {
+  points(x, y, pch = pch, col = col, bg = bg, cex = cex)
+  abline(stats::lm(y~x), col = col.smooth, ...)
+}
+pairs(c2009[,2:5], pch = ".",
+              upper.panel = panel.cor,
+              diag.panel = panel.hist,
+              lower.panel = panel.lm)
+```
+
+
+<hr>
+END!
