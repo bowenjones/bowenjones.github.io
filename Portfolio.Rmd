@@ -15,3 +15,5 @@ output: html_document
     - [Chapter 4: Line Graphs](./Projects/R_cookbook/Chapter_4.html)
     - [Chapter 5: Scatter Plots](./Projects/R_cookbook/Chapter_5.html)
     - [Chapter 6: Summarized Data Distributions](./Projects/R_cookbook/Chapter_6.html)
+    - [Chapter 7: Annotations](./Projects/R_cookbook/Chapter_7.html)
+    - [Chapter 8: Axes](./Projects/R_cookbook/Chapter_8.html)
