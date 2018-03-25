@@ -17,3 +17,4 @@ output: html_document
     - [Chapter 6: Summarized Data Distributions](./Projects/R_cookbook/Chapter_6.html)
     - [Chapter 7: Annotations](./Projects/R_cookbook/Chapter_7.html)
     - [Chapter 8: Axes](./Projects/R_cookbook/Chapter_8.html)
+    - [Chapter 9: Controlling the Overall Appearance of Graphs](./Projects/R_cookbook/Chapter_9.html)
