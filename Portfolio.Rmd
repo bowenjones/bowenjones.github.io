@@ -18,3 +18,5 @@ output: html_document
     - [Chapter 7: Annotations](./Projects/R_cookbook/Chapter_7.html)
     - [Chapter 8: Axes](./Projects/R_cookbook/Chapter_8.html)
     - [Chapter 9: Controlling the Overall Appearance of Graphs](./Projects/R_cookbook/Chapter_9.html)
+    - [Chapter 10: Legends](./Projects/R_cookbook/Chapter_10.html)
+    - [Chapter 11: Facets](./Projects/R_cookbook/Chapter_11.html)
