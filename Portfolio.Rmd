@@ -20,3 +20,4 @@ output: html_document
     - [Chapter 9: Controlling the Overall Appearance of Graphs](./Projects/R_cookbook/Chapter_9.html)
     - [Chapter 10: Legends](./Projects/R_cookbook/Chapter_10.html)
     - [Chapter 11: Facets](./Projects/R_cookbook/Chapter_11.html)
+    - [Chapter 11: Using Colors in Plots](./Projects/R_cookbook/Chapter_12.html)
