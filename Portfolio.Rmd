@@ -11,7 +11,7 @@ output: html_document
 - [Modeling Homes](./Projects/3851final.html)
     - My final project from Statistical Data Analysis II: modeling the price of homes.
   
-- R Graphics Cookbook -- Capstone Spring 2018
+- Intermediate Statistical Graphing in R -- Capstone Spring 2018
     - [Chapter 2: Quickly Exploring Data](./Projects/R_cookbook/Chapter_2.html)
     - [Chapter 3: Bar Graphs](./Projects/R_cookbook/Chapter_3.html)
     - [Chapter 4: Line Graphs](./Projects/R_cookbook/Chapter_4.html)
