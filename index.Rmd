@@ -5,8 +5,11 @@ output: html_document
 ---
 
 ```{r, echo=FALSE}
-knitr::include_graphics("success.jpg")
+knitr::include_graphics("asu.jpg")
 ```
+  
+BSc Statistics - December 2018
+
 
 ***  
 
