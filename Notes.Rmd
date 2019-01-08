@@ -110,3 +110,4 @@ geom <- rgeom(100000, .1)
 mean(geom)
 ```
 $E(X) = (1/p) - 1$A line from home
+another fromhome
