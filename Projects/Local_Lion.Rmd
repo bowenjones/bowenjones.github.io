@@ -1,7 +1,7 @@
 ---
 title: "Local Lion"
 author: "Bowen Jones"
-date: "January 2, 2019"
+date: '`r format(Sys.time(), "%b %d, %Y")`'
 output: html_document
 ---
 
@@ -14,12 +14,12 @@ library(readr)
 
 
 ```{r load in data, message = FALSE}
-dnuts2013 <- read_csv("C:/Users/Devon/Desktop/LoLi/Dnuts/dnuts2013.csv")
-dnuts2014 <- read_csv("C:/Users/Devon/Desktop/LoLi/Dnuts/dnuts2014.csv")
-dnuts2015 <- read_csv("C:/Users/Devon/Desktop/LoLi/Dnuts/dnuts2015.csv")
-dnuts2016 <- read_csv("C:/Users/Devon/Desktop/LoLi/Dnuts/dnuts2016.csv")
-dnuts2017 <- read_csv("C:/Users/Devon/Desktop/LoLi/Dnuts/dnuts2017.csv")
-dnuts2018 <- read_csv("C:/Users/Devon/Desktop/LoLi/Dnuts/dnuts2018.csv")
+dnuts2013 <- read_csv("C:/Users/Bowen/Desktop/LoLi/Dnuts/dnuts2013.csv")
+dnuts2014 <- read_csv("C:/Users/Bowen/Desktop/LoLi/Dnuts/dnuts2014.csv")
+dnuts2015 <- read_csv("C:/Users/Bowen/Desktop/LoLi/Dnuts/dnuts2015.csv")
+dnuts2016 <- read_csv("C:/Users/Bowen/Desktop/LoLi/Dnuts/dnuts2016.csv")
+dnuts2017 <- read_csv("C:/Users/Bowen/Desktop/LoLi/Dnuts/dnuts2017.csv")
+dnuts2018 <- read_csv("C:/Users/Bowen/Desktop/LoLi/Dnuts/dnuts2018.csv")
 
 ```
 
