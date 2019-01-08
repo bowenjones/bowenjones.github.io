@@ -20,8 +20,8 @@
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
-<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
-<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -30,12 +30,10 @@
   }
 </style>
 <script type="text/javascript">
-if (window.hljs) {
-  hljs.configure({languages: []});
-  hljs.initHighlightingOnLoad();
-  if (document.readyState && document.readyState === "complete") {
-    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
-  }
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
 }
 </script>
 
@@ -89,9 +87,6 @@ img {
 }
 .tabbed-pane {
   padding-top: 12px;
-}
-.html-widget {
-  margin-bottom: 20px;
 }
 button.code-folding-btn:focus {
   outline: none;
@@ -202,22 +197,23 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Portfolio</h1>
-<h4 class="date"><em>Nov 20, 2018</em></h4>
+<h4 class="date"><em>Jan 04, 2019</em></h4>
 
 </div>
 
 
 <ul>
-<li><a href="./Projects/Duplication_Project.html">Bicycle Sharing in Seattle</a>
+<li><a href="./Projects/Local_Lion.html">Local Lion Data Analysis</a> <em>(Ongoing)</em>
 <ul>
-<li>A reproduction project from Data Science 1 (see <a href="https://amber.rbind.io/projects/2016/11/10/bicyclesseattle/">original</a>) – Fall 2017</li>
+<li>My first real-world experience conducting data analysis! I’ve worked for Local Lion, a local donut and coffee shop, since 2013. Current production plans often result in a surplus of baked goods that must be disposed of every day. In order to motivate and guide my analysis, my initial plan is to create a model that could be used to predict the number of baked goods the shop must make on a given day in order to minimize loss.</li>
 </ul></li>
-<li><a href="./Projects/3851final.html">Modeling Homes</a>
+<li><a href="./Projects/3851final.html">Modeling Homes</a> <em>(Spring 2018)</em>
 <ul>
-<li>My final project from Statistical Data Analysis II: modeling the price of homes.</li>
+<li>Final project from Statistical Data Analysis II: modeling the price of homes.</li>
 </ul></li>
-<li>Intermediate Statistical Graphing in R – Capstone Spring 2018
+<li>Intermediate Statistical Graphing in R <em>(Spring 2018)</em>
 <ul>
+<li>Reproduce the 2012 textbook <em>R Graphics Cookbook</em> by Winston Chang</li>
 <li><a href="./Projects/R_cookbook/Chapter_2.html">Chapter 2: Quickly Exploring Data</a></li>
 <li><a href="./Projects/R_cookbook/Chapter_3.html">Chapter 3: Bar Graphs</a></li>
 <li><a href="./Projects/R_cookbook/Chapter_4.html">Chapter 4: Line Graphs</a></li>
@@ -230,6 +226,10 @@ $(document).ready(function () {
 <li><a href="./Projects/R_cookbook/Chapter_11.html">Chapter 11: Facets</a></li>
 <li><a href="./Projects/R_cookbook/Chapter_12.html">Chapter 12: Using Colors in Plots</a></li>
 <li><a href="./Projects/R_cookbook/Chapter_13.html">Chapter 13: Miscellaneous Graphs</a></li>
+</ul></li>
+<li><a href="./Projects/Duplication_Project.html">Bicycle Sharing in Seattle</a> <em>(Fall 2017)</em>
+<ul>
+<li>Final project for the Data Science I course – reproduce Amber Thomas’ <a href="https://amber.rbind.io/projects/2016/11/10/bicyclesseattle/">explorative analysis of bicycle-sharing data</a>.</li>
 </ul></li>
 </ul>
 
