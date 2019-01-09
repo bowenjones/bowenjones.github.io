@@ -12,14 +12,11 @@ library(dplyr)
 library(readr)
 ```
 
+# Introduction
 
-```{r load in data, message = FALSE}
-dnuts2013 <- read_csv("C:/Users/Bowen/Desktop/LoLi/Dnuts/dnuts2013.csv")
-dnuts2014 <- read_csv("C:/Users/Bowen/Desktop/LoLi/Dnuts/dnuts2014.csv")
-dnuts2015 <- read_csv("C:/Users/Bowen/Desktop/LoLi/Dnuts/dnuts2015.csv")
-dnuts2016 <- read_csv("C:/Users/Bowen/Desktop/LoLi/Dnuts/dnuts2016.csv")
-dnuts2017 <- read_csv("C:/Users/Bowen/Desktop/LoLi/Dnuts/dnuts2017.csv")
-dnuts2018 <- read_csv("C:/Users/Bowen/Desktop/LoLi/Dnuts/dnuts2018.csv")
+Here it is! My first real-world experience with data analysis. Up to this point, everything I've done regarding data analysis has been in an educational, guided context. My previous experience has been helpful in providing me with an outline of how to proceed, but in order to fully understand the process I knew I needed true practice. So I spoke with my employer -- the owner of Local Lion, a coffee shop where I've worked since 2013 -- about gaining access to the shop's sales records with the goal of building a model to predict the number of donuts the shop needs to make on a daily basis (to minimize loss). He granted me access to all the sales records since the shop opened in 2012! 
+  
+I'm super excited to dive in, but I need to solidfy my understanding of data science first. In order to adequately clean and wrangle the data, I plan to begin by covering Chapters 4 and 5 of *Modern Data Science with R*, and completing the relevant exercies below. I also plan on completing the relevant *Data Science* course on DataCamp.
 
-```
+### Chapter 4: Data Wrangling
 
