@@ -118,7 +118,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Local Lion</h1>
 <h4 class="author"><em>Bowen Jones</em></h4>
-<h4 class="date"><em>Jan 08, 2019</em></h4>
+<h4 class="date"><em>Jan 09, 2019</em></h4>
 
 </div>
 
@@ -129,6 +129,60 @@ $(document).ready(function () {
 <p>I’m super excited to dive in, but I need to solidfy my understanding of data science first. In order to adequately clean and wrangle the data, I plan to begin by covering Chapters 4 and 5 of <em>Modern Data Science with R</em>, and completing the relevant exercies below. I also plan on completing the relevant <em>Data Science</em> course on DataCamp.</p>
 <div id="chapter-4-data-wrangling" class="section level3">
 <h3>Chapter 4: Data Wrangling</h3>
+<p>Exercise 4.1<br />
+Each of these tasks can be performed using a single data verb. For each task, say which verb it is:<br />
+1. Find the average of one of the variables.<br />
+<code>summarize()</code><br />
+2. Add a new column that is the ratio between two variables.<br />
+<code>mutate()</code><br />
+3. Sort the cases in descending order of a variable.<br />
+<code>arrange()</code><br />
+4. Create a new data table that includes only those cases that meet a critereon.<br />
+<code>filter()</code><br />
+5. From a data table with three categorical variables, A, B, and C, and a quantitative variable X, produce a data frame that has the same cases but only the variables A and x.<br />
+<code>select()</code></p>
+<p>Exercises 4.2-3<br />
+Use the <code>nycflights13</code> package and the <code>flights</code> data frame to answer the following questions: What month had the highest proportion of cancelled flights? What month had the lowest?</p>
+<pre class="r"><code>flights %&gt;%
+  group_by(month) %&gt;% 
+  summarize(flights = n(), cancelled = sum(is.na(dep_time)), prop = sum(is.na(dep_time))/n()) %&gt;% 
+  arrange(prop)</code></pre>
+<pre><code>## # A tibble: 12 x 4
+##    month flights cancelled        prop
+##    &lt;int&gt;   &lt;int&gt;     &lt;int&gt;       &lt;dbl&gt;
+##  1    10   28889       236 0.008169199
+##  2    11   27268       233 0.008544814
+##  3     9   27574       452 0.016392254
+##  4     8   29327       486 0.016571760
+##  5     1   27004       521 0.019293438
+##  6     5   28796       563 0.019551327
+##  7     4   28330       668 0.023579245
+##  8     3   28834       861 0.029860581
+##  9     7   29425       940 0.031945624
+## 10     6   28243      1009 0.035725667
+## 11    12   28135      1025 0.036431491
+## 12     2   24951      1261 0.050539057</code></pre>
+<p>October had the lowest proportion of cancelled flights and February had the highest.</p>
+<p>What plane (specified by the <code>tailnum</code> variable) traveled the most times from New York City airports in 2013? Plot the number of trips per week over the year.</p>
+<pre class="r"><code>flights %&gt;%
+  select(flight, tailnum) %&gt;% 
+  group_by(tailnum) %&gt;% 
+  summarize(flights = n()) %&gt;% 
+  arrange(desc(flights))</code></pre>
+<pre><code>## # A tibble: 4,044 x 2
+##    tailnum flights
+##      &lt;chr&gt;   &lt;int&gt;
+##  1    &lt;NA&gt;    2512
+##  2  N725MQ     575
+##  3  N722MQ     513
+##  4  N723MQ     507
+##  5  N711MQ     486
+##  6  N713MQ     483
+##  7  N258JB     427
+##  8  N298JB     407
+##  9  N353JB     404
+## 10  N351JB     402
+## # ... with 4,034 more rows</code></pre>
 </div>
 </div>
 

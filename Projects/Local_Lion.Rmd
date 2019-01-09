@@ -10,6 +10,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 library(readr)
+library(nycflights13)
 ```
 
 # Introduction
@@ -19,4 +20,35 @@ Here it is! My first real-world experience with data analysis. Up to this point,
 I'm super excited to dive in, but I need to solidfy my understanding of data science first. In order to adequately clean and wrangle the data, I plan to begin by covering Chapters 4 and 5 of *Modern Data Science with R*, and completing the relevant exercies below. I also plan on completing the relevant *Data Science* course on DataCamp.
 
 ### Chapter 4: Data Wrangling
+Exercise 4.1  
+Each of these tasks can be performed using a single data verb. For each task, say which verb it is:  
+1. Find the average of one of the variables.  
+`summarize()`  
+2. Add a new column that is the ratio between two variables.  
+`mutate()`  
+3. Sort the cases in descending order of a variable.  
+`arrange()`  
+4. Create a new data table that includes only those cases that meet a critereon.  
+`filter()`  
+5. From a data table with three categorical variables, A, B, and C, and a quantitative variable X, produce a data frame that has the same cases but only the variables A and x.  
+`select()`  
+
+Exercises 4.2-3  
+Use the `nycflights13` package and the `flights` data frame to answer the following questions: What month had the highest proportion of cancelled flights? What month had the lowest?
+```{r}
+flights %>%
+  group_by(month) %>% 
+  summarize(flights = n(), cancelled = sum(is.na(dep_time)), prop = sum(is.na(dep_time))/n()) %>% 
+  arrange(prop)
+```
+October had the lowest proportion of cancelled flights and February had the highest.
+
+What plane (specified by the `tailnum` variable) traveled the most times from New York City airports in 2013? Plot the number of trips per week over the year.
+```{r}
+flights %>%
+  select(flight, tailnum) %>% 
+  group_by(tailnum) %>% 
+  summarize(flights = n()) %>% 
+  arrange(desc(flights))
+```
 
