@@ -1,0 +1,101 @@
+---
+title: "Local Lion"
+author: "Bowen Jones"
+date: "`r format(Sys.time(), "%b %d, %Y")`"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+```
+
+# Introduction
+
+Here it is! My first real-world experience with data analysis. Up to this point, everything I've done regarding data analysis has been in a guided, educational context. My previous experience has been helpful in providing me with an outline of how to proceed, but in order to fully understand the process I knew I needed true practice. So I spoke with my employer -- the owner of Local Lion, a coffee shop where I've worked since 2013 -- about gaining access to the shop's sales records with the goal of building a model to predict the number of donuts the shop needs to make on a daily basis (to minimize loss). He granted me access to all the sales records since the shop opened in 2012! 
+
+Let's dive in!
+
+When I initially surveyed the data, I found that it was saved in annual sales reports. I filtered the reports to only grab the sales relevant to our yeast donuts and found that each file needed to be transposed before proceeding in `R`. I transposed each file in excel and combined them into one `.csv` so I wouldn't have to repeat the read-in code for each file.
+```{r read in data, message = FALSE}
+donuts <- read.csv("./tidydonuts.csv")
+glimpse(donuts)
+```
+
+Ah, the .csv file imported each variable as a factor. Let me recategorize the data.
+```{r}
+donuts$Date <- as.Date(donuts$Date, format = "%m/%d/%Y")
+donuts$Dozen <- as.numeric(sub('\\$','',as.character(donuts$Dozen)))
+donuts$Single <- as.numeric(sub('\\$','',as.character(donuts$Single)))
+donuts$HalfDozen <- as.numeric(sub('\\$','',as.character(donuts$HalfDozen)))
+glimpse(donuts)
+```
+
+Now, as you can see, we have 3 menu item relevant to yeast donuts: `Single`, `Dozen` and `HalfDozen`. These each report the total *sales* regarding each menu item. I'm mainly interested in the *total number* of donuts sold daily, so let's create a variable that reports that.
+
+```{r}
+donuts <- donuts %>% 
+  mutate(Daily = round(((Dozen/14.75)*12) + (Single/1.64) + ((HalfDozen/8.2)*6)))
+glimpse(donuts)
+```
+
+
+I just gotta know...how many donuts have we sold??
+```{r}
+donuts %>% 
+  summarize("Total Sold" = sum(Daily),
+            "Total Sales" = sum(Dozen) + sum(Single) + sum(HalfDozen))
+```
+Wow! That's not counting the 5 dozen we send daily to Appalachian State University, so the real figure's somewhat higher.
+
+```{r}
+donuts %>%
+  ggplot(aes(Date, Daily)) +
+  geom_point()
+```
+The horizontal line may initially strike you as peculiar, but we're closed on Sundays.
+
+
+
+Let's make months/seasons!
+```{r}
+donuts_ms <- donuts %>%
+  mutate(Year = ordered(as.factor(paste(year(Date)))),
+         Month = ordered(as.factor(paste(month(Date), year(Date), sep = "/"))),
+         Season = as.factor(ifelse(Month %in% c("8/2014", "9/2014", "10/2014", "8/2015","9/2015", "10/2015", "8/2016", "9/2016", "10/2016", "8/2017", "9/2017", "10/2017", "8/2018", "9/2018", "10/2018"), "Fall",
+                  ifelse(Month %in% c("11/2014", "12/2014", "1/2014", "2/2014", "11/2015", "12/2015", "1/2015", "2/2015", "11/2016", "12/2016", "1/2016", "2/2016", "11/2017", "12/2017", "1/2017", "2/2017", "11/2018", "12/2018", "1/2018", "2/2018"), "Winter",
+                  ifelse(Month %in% c("3/2014", "4/2014", "3/2015", "4/2015", "3/2016", "4/2016", "3/2017", "4/2017", "3/2018", "4/2018"), "Spring", "Summer")))))
+```
+
+```{r}
+donuts_ms %>% 
+  ggplot(aes(Date, Daily, color = Season)) +
+  geom_point() +
+  labs(x = "Donut Sales per Season")
+```
+
+```{r}
+donuts_ms %>% 
+  ggplot(aes(Date, Daily)) +
+  geom_boxplot() +
+  facet_wrap(~ Season)
+```
+
+
+```{r}
+donuts_ms %>% 
+  group_by(Season) %>% 
+  summarize(Total = sum(Daily))
+```
+
+
+
+```{r eval = FALSE}
+install.packages("devtools")
+library("devtools")
+install_github("Ram-N/weatherData")
+library(weatherData)
+```
+

@@ -5,7 +5,7 @@ date: '`r format(Sys.time(), "%b %d, %Y")`'
 output: html_document
 ---
 
-- [Local Lion Data Analysis](./Projects/Local_Lion.html) *(Ongoing)*
+- [Local Lion Data Analysis](./Projects/LocalLion.html) *(Ongoing)*
     - My first real-world experience conducting data analysis! I've worked for Local Lion, a local donut and coffee shop, since 2013. Current production plans often result in a surplus of baked goods that must be disposed of every day. In order to motivate and guide my analysis, my initial plan is to create a model that could be used to predict the number of baked goods the shop must make on a given day in order to minimize loss.
   
 - [Modeling Homes](./Projects/3851final.html) *(Spring 2018)*
