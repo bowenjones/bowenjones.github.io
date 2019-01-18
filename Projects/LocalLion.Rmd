@@ -1,13 +1,12 @@
 ---
 title: "Local Lion"
 author: "Bowen Jones"
-date: "`r format(Sys.time(), "%b %d, %Y")`"
+date: '`r format(Sys.time(), "%b %d, %Y")`'
 output: html_document
 ---
 
-
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, comment = NA)
 library(tidyverse)
 library(lubridate)
 ```
@@ -24,7 +23,7 @@ donuts <- read.csv("./tidydonuts.csv")
 glimpse(donuts)
 ```
 
-Ah, the .csv file imported each variable as a factor. Let me recategorize the data.
+Ah, the .csv file imported each variable as a factor. Let me reclassify the data.
 ```{r}
 donuts$Date <- as.Date(donuts$Date, format = "%m/%d/%Y")
 donuts$Dozen <- as.numeric(sub('\\$','',as.character(donuts$Dozen)))
@@ -42,13 +41,13 @@ glimpse(donuts)
 ```
 
 What's our high score??
-```{r}
+```{r, echo = FALSE}
 donuts %>% 
 filter(Daily == max(Daily))
 ```
-
-Wow, almost 1,000 donuts in one day! What were the top ten highest values?
-```{r}
+Wow, almost 1,000 donuts in one day! Guess what June 1st is...National Donut Day.  
+What were the other highest values?  
+```{r, echo = FALSE}
 donuts %>% 
   arrange(desc(Daily)) %>% 
   head()
@@ -56,19 +55,20 @@ donuts %>%
 
 
 I just gotta know...what's the total number of yeast donuts we've sold??
-```{r}
+```{r, echo = FALSE}
 donuts %>% 
   summarize("Total Sold" = sum(Daily),
             "Total Sales" = sum(Dozen) + sum(Single) + sum(HalfDozen))
 ```
 Wow! That value doesn't account for the 5 dozen we send daily to Appalachian State University (or our lax data entry), so the real figure's somewhat higher.
 
-Time for some ~data viz~
-```{r}
+Time for some ~data viz~  
+```{r, echo = FALSE}
 donuts %>%
   ggplot(aes(Date, Daily)) +
   geom_point()
 ```
+  
 The horizontal line may initially strike you as peculiar, but we're closed on Sundays.
 There's also a marked increase in sales in mid-late 2014. After mentioning it to the people at Local Lion, we determined that this shift coincides with an intensive remodel that occured around that time. I guess it paid off!
 
@@ -85,13 +85,14 @@ donuts_ms <- donuts %>%
 ```
 
 
-Boone, NC can be accurately described as a "college town". The student population matches (or possibly surpasses) the resident population. Therefore, I've always assumed that sales lag during the summer, when half the town is gone. Let's do some quick data visualization to see if this is the case!
-```{r}
+Boone, NC can be accurately described as a "college town". The student population matches (or possibly surpasses) the resident population. Therefore, I've always assumed that sales lag during the summer, when half the town is gone. Let's do some quick data visualization to see if this is the case!  
+```{r, echo = FALSE}
 donuts_ms %>% 
   ggplot(aes(Date, Daily, color = Season)) +
   geom_point() +
   labs(x = "Donut Sales per Season")
 ```
+  
 Wow! Much to my surprise, donut sales in the summer don't appear to lag at all, one could even make a tentative claim that they sell slightly better than in the spring. I suppose that the tourist influx mitigates any dip in business from student absence.
 
 ```{r}
@@ -100,10 +101,11 @@ donuts_ms %>%
   geom_boxplot() +
   facet_wrap(~ Season)
 ```
+  
 There doesn't appear to be any significant difference in donut sales based on season.
 
 Let's peep the *number* of donuts sold by season. 
-```{r}
+```{r, echo = FALSE}
 donuts_ms %>% 
   group_by(Season) %>% 
   summarize(Total = sum(Daily))
@@ -111,7 +113,7 @@ donuts_ms %>%
 Spring appears to be a slump season, but I readily attribute that to the way I coded `seasons`; "Spring" is classified as only two months - March and April.
 
 
-```{r eval = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 install.packages("devtools")
 library("devtools")
 install_github("Ram-N/weatherData")
@@ -145,7 +147,7 @@ s18$Item.Name
 ```
 
 
-```{r, echo = FALSE, results="hide"}
+```{r, echo = FALSE, eval = FALSE}
 s13 <- s13[-c(1:3,5:8,11,15,16,24,28,41,43,44,61,65,75,76,78:82,86),]
 s13$Item.Name
 ```
@@ -171,7 +173,7 @@ summarize("Total Sold" = sum(Items.Sold),
 ```
 
 
-```{r}
+```{r, echo = FALSE, eval = FALSE}
 ss18 <- s18 %>% 
   select(Item.Name, Items.Sold, Net.Sales)
 
@@ -181,13 +183,13 @@ ss17 <- s17 %>%
 sales <- ss18 %>% 
   bind_rows(ss17)
 ```
-```{r}
+```{r, echo = FALSE, eval = FALSE}
 anti_join(s18, s17, by = "Item.Name")
 ```
 
 
 `data_frame()`
-```{r}
+```{r, echo = FALSE, eval = FALSE}
 dsales <- data_frame(Items = s18$Item.Name, Sold = (s18$Items.Sold + s17$Items.Sold))
 ```
 
