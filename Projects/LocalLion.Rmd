@@ -1,5 +1,5 @@
 ---
-title: "Local Lion"
+title: "Local Lion Data Analysis"
 author: "Bowen Jones"
 date: '`r format(Sys.time(), "%b %d, %Y")`'
 output: html_document
@@ -11,11 +11,16 @@ library(tidyverse)
 library(lubridate)
 ```
 
-# Introduction
+## Introduction
 
-Here it is! My first real-world experience with data analysis. Up to this point, everything I've done regarding data analysis has been in a guided, educational context. My previous experience has been helpful in providing me with an outline of how to proceed, but in order to fully understand the process I knew I needed true practice. So I spoke with my employer -- the owner of Local Lion, a coffee shop where I've worked since 2013 -- about gaining access to the shop's sales records with the goal of building a model to predict the number of donuts the shop needs to make on a daily basis (to minimize loss). He granted me access to all the sales records since the shop opened in 2012! 
+Here it is! My first real-world experience with data analysis. Up to this point, everything I've done involving data analysis has been in a guided, educational context. My previous experience has been helpful in providing me with an outline of how to proceed, but in order to fully understand the process, hands-on practice on an authentic data set is essential. So I spoke with my employer about gaining access to the company's sales records with the goal of building a model to minimize loss incurred by wasted product. He granted me access to all the sales records since the company was founded in 2012!
+
+*Background:*
+The data comes from Local Lion, a coffee and donut shop in Boone, NC where I've worked since 2013. The resident population of Boone is matched (if not surpassed) by the student population of local Appalachian State University. As a result, students constitute a proportionally large percentage of our client base; I suspect that their absence during the summer has a significant impact on our sales. This notion is fundamental to my goal: to build a model to predict the number of donuts we need to make each morning based on a variety of external factors from weather to student presence. (Note: We sell a variety of different *types* of donuts, but for this I focus primarily on our yeast donuts -- these are by and large our best-selling donut.)
 
 Let's dive in!
+
+## Loading and Tidying data
 
 When I initially surveyed the data, I found that it was saved in annual sales reports. I filtered the reports to only grab the sales relevant to our yeast donuts and found that each file needed to be transposed before proceeding in `R`. I transposed each file in excel and combined them into one `.csv` so I wouldn't have to repeat the read-in code for each file.
 ```{r read in data, message = FALSE}
@@ -32,44 +37,48 @@ donuts$HalfDozen <- as.numeric(sub('\\$','',as.character(donuts$HalfDozen)))
 glimpse(donuts)
 ```
 
-Now, as you can see, we have 3 menu item relevant to yeast donuts: `Single`, `Dozen` and `HalfDozen`. These each report the total *sales* regarding each menu item. I'm mainly interested in the *total number* of donuts sold daily, so let's create a variable that reports that.
+Now, as you can see, we have 3 menu item relevant to yeast donuts: `Single`, `Dozen` and `HalfDozen`. These each report the total *sales* regarding each menu item. I'm mainly interested in the *total number* of yeast donuts sold daily, so let's create a variable that reports that.
 
 ```{r}
 donuts <- donuts %>% 
-  mutate(Daily = as.integer(((Dozen/14.75)*12) + (Single/1.64) + ((HalfDozen/8.2)*6)))
+  mutate(Total = as.integer(((Dozen/14.75)*12) + (Single/1.64) + ((HalfDozen/8.2)*6)))
 glimpse(donuts)
 ```
 
-What's our high score??
+## Exploratory Data Analysis
+
+Now that the data set is in order and ready for action, I want to take a little time to answer a few questions that I've always been curious about. This will also help me get to know the data set better. For example, what's our high score?
 ```{r, echo = FALSE}
 donuts %>% 
-filter(Daily == max(Daily))
+filter(Total == max(Total))
 ```
-Wow, almost 1,000 donuts in one day! Guess what June 1st is...National Donut Day.  
+
+Wow, almost 1,000 yeast donuts in one day! Guess what June 1st is...National Donut Day.  
 What were the other highest values?  
 ```{r, echo = FALSE}
 donuts %>% 
-  arrange(desc(Daily)) %>% 
+  arrange(desc(Total)) %>% 
   head()
 ```
 
 
-I just gotta know...what's the total number of yeast donuts we've sold??
+Now, another big question...what's the total number of yeast donuts we've sold?
 ```{r, echo = FALSE}
 donuts %>% 
-  summarize("Total Sold" = sum(Daily),
+  summarize("Total Sold" = sum(Total),
             "Total Sales" = sum(Dozen) + sum(Single) + sum(HalfDozen))
 ```
-Wow! That value doesn't account for the 5 dozen we send daily to Appalachian State University (or our lax data entry), so the real figure's somewhat higher.
+Wow! Almost half a million donuts. That value doesn't account for the 5 dozen we send daily to Appalachian State University (or our lax data entry), so the real figure's somewhat higher.
 
-Time for some ~data viz~  
+## Data Visualization and Investigation
 ```{r, echo = FALSE}
 donuts %>%
-  ggplot(aes(Date, Daily)) +
-  geom_point()
+  ggplot(aes(Date, Total)) +
+  geom_point() +
+  labs(y = "Daily Total")
 ```
   
-The horizontal line may initially strike you as peculiar, but we're closed on Sundays.
+This scatterplot reflects the number of donuts sold each day. The horizontal line at the bottom initially struck me as peculiar, but I quickly realized that's due to the fact that we're closed on Sundays.
 There's also a marked increase in sales in mid-late 2014. After mentioning it to the people at Local Lion, we determined that this shift coincides with an intensive remodel that occured around that time. I guess it paid off!
 
 Now, ultimately I'd like to make a model that predicts how many yeast donuts we should make on a given day considering a number of external factors (weather, student presence, etc.). So let's begin by adding some additional data to the dataframe! 
@@ -84,42 +93,40 @@ donuts_ms <- donuts %>%
                   ifelse(Month %in% c("3/2013", "4/2013", "3/2014", "4/2014 ", "3/2015", "4/2015", "3/2016", "4/2016", "3/2017", "4/2017", "3/2018", "4/2018"), "Spring", "Summer")))))
 ```
 
-
-Boone, NC can be accurately described as a "college town". The student population matches (or possibly surpasses) the resident population. Therefore, I've always assumed that sales lag during the summer, when half the town is gone. Let's do some quick data visualization to see if this is the case!  
+You may have noticed that I only coded two months as "Spring"--this will allow me to capture the majority of summer break in the "Summer" season and accurately determine if the corresponding student absence truly has an effect on our donut sales. Let's do some quick data visualization to see if this is the case!  
 ```{r, echo = FALSE}
 donuts_ms %>% 
-  ggplot(aes(Date, Daily, color = Season)) +
+  ggplot(aes(Date, Total, color = Season)) +
   geom_point() +
-  labs(x = "Donut Sales per Season")
+  labs(x = "Donut Sales per Season", y = "Daily Total")
 ```
   
 Wow! Much to my surprise, donut sales in the summer don't appear to lag at all, one could even make a tentative claim that they sell slightly better than in the spring. I suppose that the tourist influx mitigates any dip in business from student absence.
 
 ```{r}
 donuts_ms %>% 
-  ggplot(aes(Date, Daily)) +
+  ggplot(aes(Date, Total, group = Season)) +
   geom_boxplot() +
   facet_wrap(~ Season)
 ```
   
 There doesn't appear to be any significant difference in donut sales based on season.
 
-Let's peep the *number* of donuts sold by season. 
+Let's check the *number* of donuts sold by season. 
 ```{r, echo = FALSE}
 donuts_ms %>% 
   group_by(Season) %>% 
-  summarize(Total = sum(Daily))
+  summarize(Total = sum(Total))
 ```
-Spring appears to be a slump season, but I readily attribute that to the way I coded `seasons`; "Spring" is classified as only two months - March and April.
+Spring appears to be a slump season, but I readily attribute that to the way I coded `seasons`.
 
 
-```{r, echo = FALSE, eval = FALSE}
-install.packages("devtools")
-library("devtools")
-install_github("Ram-N/weatherData")
-library(weatherData)
-```
-
+## Discussion
+I set out to build a practical linear model to predict the number of yeast donuts the shop would need to make on a given day based on a handful of external factors. However, the "data visualization and investigation" section revealed no effect of `season` on donut sales. This means that summer break at the university, and the subsequent absence of the student population (which accounts for roughly half of Boone's overall population), has no effect on Local Lion's donut sales. Proving the contrary was fundamental to my proposed model, so I'm going to have to table the model-building for a bit. 
+However, from this discovery I was able to infer that Boone's tourism industry is significant enough to compensate for nearly half of the population. During my 7 years in Boone, I had no idea that the tourist economy was that significant! A conversation could be had regarding the students' actual buying power, but for now it simply spells the end of my model-building exercise.   
+Now I'm going to continue to dig in the data to answer other questions I've had.  
+  
+  
 Have we sold more donuts or coffee?
 ```{r}
 s13 <- read.csv("./s13.csv")
@@ -172,24 +179,4 @@ summarize("Total Sold" = sum(Items.Sold),
           "Net Sales" = sum(Net.Sales))
 ```
 
-
-```{r, echo = FALSE, eval = FALSE}
-ss18 <- s18 %>% 
-  select(Item.Name, Items.Sold, Net.Sales)
-
-ss17 <- s17 %>% 
-  select(Item.Name, Items.Sold, Net.Sales)
-
-sales <- ss18 %>% 
-  bind_rows(ss17)
-```
-```{r, echo = FALSE, eval = FALSE}
-anti_join(s18, s17, by = "Item.Name")
-```
-
-
-`data_frame()`
-```{r, echo = FALSE, eval = FALSE}
-dsales <- data_frame(Items = s18$Item.Name, Sold = (s18$Items.Sold + s17$Items.Sold))
-```
 
